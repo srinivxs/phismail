@@ -1,0 +1,51 @@
+# =============================================================================
+# PhisMail — Backend Dependencies
+# =============================================================================
+
+# --- Web Framework ---
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+
+# --- Database ---
+sqlalchemy==2.0.36
+alembic==1.14.1
+psycopg2-binary==2.9.10
+
+# --- Task Queue ---
+celery==5.4.0
+redis==5.2.1
+
+# --- URL & Domain Analysis ---
+beautifulsoup4==4.12.3
+tldextract==5.1.3
+dnspython==2.7.0
+python-whois==0.9.4
+
+# --- Homograph Detection ---
+confusables==1.2.0
+
+# --- HTTP Client (async) ---
+httpx==0.28.1
+
+# --- NLP & ML ---
+scikit-learn==1.6.1
+xgboost==2.1.3
+shap==0.46.0
+numpy==2.2.1
+
+# --- Security & Validation ---
+python-magic==0.4.27
+slowapi==0.1.9
+
+# --- Observability ---
+structlog==24.4.0
+prometheus-client==0.21.1
+
+# --- Retry Logic ---
+tenacity==9.0.0
+
+# --- Configuration ---
+pydantic==2.10.4
+pydantic-settings==2.7.1
+python-dotenv==1.0.1

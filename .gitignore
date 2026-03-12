@@ -1,37 +1,74 @@
-# Dependencies
-node_modules/
+# ── Python ──────────────────────────────────────────────────────────────────
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+coverage/
+htmlcov/
+.nyc_output/
 .venv/
 venv/
 env/
+ENV/
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
+# ── Node / Next.js ───────────────────────────────────────────────────────────
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/.turbo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# OS
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Environment
+# ── Environment ──────────────────────────────────────────────────────────────
 .env
 .env.local
 .env.*.local
 
-# Build
-dist/
-build/
-*.egg-info/
+# ── IDE / OS ─────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# Logs
+# ── Logs ─────────────────────────────────────────────────────────────────────
 *.log
-npm-debug.log*
+logs/
 
-# Coverage
-coverage/
-.nyc_output/
-htmlcov/
+# ── Database ─────────────────────────────────────────────────────────────────
+*.sqlite
+*.sqlite3
+*.db
+
+# ── Runtime storage (uploaded artifacts) ─────────────────────────────────────
+storage/emails/
+!storage/emails/.gitkeep
+
+# ── Large dataset files ───────────────────────────────────────────────────────
+dataset/*.csv
+
+# ── Internal / AI tooling files ──────────────────────────────────────────────
+.claude/
+gemini.md
+implementation_plan.md
+CLAUDE.md
+
+# ── ML model artefacts ───────────────────────────────────────────────────────
+ml_models/
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.onnx

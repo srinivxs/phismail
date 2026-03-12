@@ -1,0 +1,20 @@
+# PhisMail Schemas Package
+from app.schemas.schemas import (
+    UrlSubmissionRequest,
+    AnalysisJobResponse,
+    AnalysisStatusResponse,
+    IndicatorResponse,
+    DomainIntelResponse,
+    UrlAnalysisResponse,
+    ThreatIntelHitResponse,
+    ExplainabilityResponse,
+    InvestigationReportResponse,
+    AnalysisListResponse,
+    HealthResponse,
+    ExportResponse,
+    AuditLogEntry,
+    ArtifactTypeEnum,
+    VerdictEnum,
+    SeverityEnum,
+    AnalysisStatusEnum,
+)
