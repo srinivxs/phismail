@@ -76,6 +76,32 @@ class TestAnalyzeAttachments:
         assert result.risk_score <= 1.0
 
 
+class TestRtloDetection:
+    """Test Right-to-Left Override (RTLO) attack detection."""
+
+    def test_detects_rtlo_in_filename(self):
+        """U+202E in filename should be flagged as RTLO attack."""
+        result = analyze_attachments([
+            {"filename": "harmless\u202eexe.doc", "content_type": "application/octet-stream", "size": 1024, "sha256": "abc"},
+        ])
+        assert result.rtlo_attack is True
+        assert result.risk_score > 0
+
+    def test_detects_lro_in_filename(self):
+        """U+202D (Left-to-Right Override) should also be flagged."""
+        result = analyze_attachments([
+            {"filename": "file\u202dtest.exe", "content_type": "application/octet-stream", "size": 1024, "sha256": "abc"},
+        ])
+        assert result.rtlo_attack is True
+
+    def test_no_rtlo_in_normal_filename(self):
+        """Normal filenames should not trigger RTLO detection."""
+        result = analyze_attachments([
+            {"filename": "document.pdf", "content_type": "application/pdf", "size": 1024, "sha256": "abc"},
+        ])
+        assert result.rtlo_attack is False
+
+
 class TestMimeMismatch:
     """Test MIME type mismatch detection."""
 

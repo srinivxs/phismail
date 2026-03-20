@@ -24,6 +24,7 @@ class AttachmentRiskResult:
         self.double_extension_detected: bool = False
         self.archive_with_executable: bool = False
         self.mime_mismatch_detected: bool = False
+        self.rtlo_attack: bool = False
         self.risky_attachments: List[Dict[str, Any]] = []
         self.risk_score: float = 0.0
 
@@ -38,11 +39,18 @@ def analyze_attachments(attachments: List[Dict[str, Any]]) -> AttachmentRiskResu
         return result
 
     for attachment in attachments:
-        filename = attachment.get("filename", "").lower()
+        raw_filename = attachment.get("filename", "")
+        filename = raw_filename.lower()
         content_type = attachment.get("content_type", "").lower()
         size = attachment.get("size", 0)
 
         risks = []
+
+        # RTLO (Right-to-Left Override) attack detection
+        # Attackers use U+202E to reverse filename display: "harmlesscod.exe" → "harmlessexe.doc"
+        if "\u202e" in raw_filename or "\u202d" in raw_filename:
+            result.rtlo_attack = True
+            risks.append("rtlo_attack")
 
         # Check for executable extensions
         _, ext = os.path.splitext(filename)
@@ -95,6 +103,7 @@ def analyze_attachments(attachments: List[Dict[str, Any]]) -> AttachmentRiskResu
         result.double_extension_detected * 0.3,
         result.mime_mismatch_detected * 0.15,
         result.has_archive * 0.1,
+        result.rtlo_attack * 0.4,
     ]
     result.risk_score = min(sum(risk_factors), 1.0)
 

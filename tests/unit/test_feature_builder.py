@@ -55,6 +55,9 @@ class MockNlpResult:
         self.threat_language_score = 0.8
         self.sentiment_score = 0.6
         self.imperative_language_score = 0.4
+        self.webmail_phishing_phrase_count = 0
+        self.helpdesk_impersonation_detected = False
+        self.generic_anchor_link_detected = False
 
 
 class MockAttachmentResult:
@@ -66,6 +69,26 @@ class MockAttachmentResult:
         self.double_extension_detected = True
         self.archive_with_executable = False
         self.mime_mismatch_detected = False
+
+
+class MockRedirectResult:
+    def __init__(self, count=3, different_domain=True, to_ip=False,
+                 domain_mismatch=True, meta_refresh=True):
+        self.redirect_count = count
+        self.redirect_to_different_domain = different_domain
+        self.redirect_to_ip = to_ip
+        self.final_domain_mismatch = domain_mismatch
+        self.meta_refresh_detected = meta_refresh
+
+
+class MockThreatIntelResult:
+    def __init__(self, openphish=False, phishtank=True, urlhaus=False):
+        self.openphish_match = openphish
+        self.phishtank_match = phishtank
+        self.urlhaus_match = urlhaus
+        self.domain_blacklisted = any([openphish, phishtank, urlhaus])
+        self.confidence_score = sum([openphish, phishtank, urlhaus]) / 3.0
+        self.matches = []
 
 
 class TestBuildFeatureVector:
@@ -129,6 +152,110 @@ class TestBuildFeatureVector:
         )
         for key, value in features.items():
             assert isinstance(value, float), f"Feature '{key}' is {type(value)}, not float"
+
+    def test_builds_threat_intel_features(self):
+        """Threat intel results should map into the feature vector."""
+        threat = MockThreatIntelResult(openphish=True, phishtank=True, urlhaus=False)
+        features = build_feature_vector(threat_result=threat)
+        assert features["openphish_match"] == 1.0
+        assert features["phishtank_match"] == 1.0
+        assert features["urlhaus_match"] == 0.0
+        assert features["domain_blacklisted"] == 1.0
+        assert abs(features["threat_confidence_score"] - (2 / 3.0)) < 0.01
+
+    def test_threat_intel_absent_leaves_no_features(self):
+        """When threat_result is None, threat intel features should not be set."""
+        features = build_feature_vector()
+        assert "openphish_match" not in features
+        assert "phishtank_match" not in features
+
+    def test_builds_redirect_features(self):
+        """Redirect chain results should map into the feature vector."""
+        redirect = MockRedirectResult(
+            count=3, different_domain=True, to_ip=False,
+            domain_mismatch=True, meta_refresh=True,
+        )
+        features = build_feature_vector(redirect_results=[redirect])
+        assert features["redirect_count"] == 3.0
+        assert features["redirect_to_different_domain"] == 1.0
+        assert features["redirect_to_ip"] == 0.0
+        assert features["final_domain_mismatch"] == 1.0
+        assert features["meta_refresh_detected"] == 1.0
+
+    def test_redirect_absent_leaves_no_features(self):
+        """When redirect_results is empty, redirect features should not be set."""
+        features = build_feature_vector(redirect_results=[])
+        assert "redirect_count" not in features
+        assert "final_domain_mismatch" not in features
+
+    def test_worst_url_scoring_uses_most_suspicious(self):
+        """When multiple URLs exist, worst-case values should be used."""
+        benign = MockUrlResult()
+        benign.url_length = 20
+        benign.contains_ip = False
+        benign.has_https = True
+        benign.entropy_score = 2.0
+        benign.username_in_url = False
+        benign.is_shortened = False
+
+        malicious = MockUrlResult()
+        malicious.url_length = 150
+        malicious.contains_ip = True
+        malicious.has_https = False
+        malicious.entropy_score = 6.5
+        malicious.username_in_url = True
+        malicious.is_shortened = True
+
+        features = build_feature_vector(url_results=[benign, malicious])
+
+        # max() for suspicion features
+        assert features["url_length"] == 150.0
+        assert features["contains_ip_address"] == 1.0
+        assert features["url_entropy_score"] == 6.5
+        assert features["username_in_url"] == 1.0
+        assert features["url_shortened"] == 1.0
+        # min() for has_https (lack of HTTPS is suspicious)
+        assert features["has_https"] == 0.0
+
+    def test_worst_url_order_independent(self):
+        """Worst-case scoring should not depend on URL order."""
+        benign = MockUrlResult()
+        benign.url_length = 20
+        benign.contains_ip = False
+
+        malicious = MockUrlResult()
+        malicious.url_length = 150
+        malicious.contains_ip = True
+
+        # malicious first
+        f1 = build_feature_vector(url_results=[malicious, benign])
+        # benign first (old code would miss malicious)
+        f2 = build_feature_vector(url_results=[benign, malicious])
+
+        assert f1["url_length"] == f2["url_length"] == 150.0
+        assert f1["contains_ip_address"] == f2["contains_ip_address"] == 1.0
+
+    def test_ip_reputation_wired_into_features(self):
+        """IP reputation result should populate ip_blacklisted and country_risk_score."""
+
+        class MockIpReputation:
+            ip_blacklisted = True
+            country_risk_score = 1.0
+
+        threat = MockThreatIntelResult()
+        features = build_feature_vector(
+            threat_result=threat,
+            ip_reputation_result=MockIpReputation(),
+        )
+        assert features["ip_blacklisted"] == 1.0
+        assert features["country_risk_score"] == 1.0
+
+    def test_ip_reputation_absent_defaults_to_zero(self):
+        """Without IP reputation, ip_blacklisted and country_risk_score should be 0."""
+        threat = MockThreatIntelResult()
+        features = build_feature_vector(threat_result=threat)
+        assert features["ip_blacklisted"] == 0.0
+        assert features["country_risk_score"] == 0.0
 
     def test_feature_count_in_expected_range(self):
         """Feature vector should have ~70-90 features."""

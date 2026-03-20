@@ -73,6 +73,7 @@ def run_analysis_pipeline(self, analysis_id: str):
 def _process_email(db: Session, job: AnalysisJob):
     """Process an email artifact through the full pipeline."""
 
+    import asyncio
     from app.services.email_parser.parser import parse_eml_file
     from app.services.header_analysis.header_analyzer import analyze_headers
     from app.services.url_analysis.url_analyzer import analyze_url
@@ -80,6 +81,9 @@ def _process_email(db: Session, job: AnalysisJob):
     from app.services.domain_intelligence.homograph_detector import detect_homograph
     from app.services.nlp_analysis.phishing_language_detector import analyze_phishing_language
     from app.services.attachment_analysis.attachment_risk_detector import analyze_attachments
+    from app.services.threat_intelligence.threat_intel_service import check_threat_intelligence
+    from app.services.threat_intelligence.ip_reputation_client import check_ip_reputation
+    from app.services.url_analysis.redirect_tracker import trace_redirect_chain
     from app.services.feature_engineering.feature_builder import build_feature_vector
     from app.services.risk_scoring.rule_engine import calculate_risk_score
     from app.services.reporting.report_generator import generate_report
@@ -109,6 +113,7 @@ def _process_email(db: Session, job: AnalysisJob):
         reply_to=parsed.reply_to,
         return_path=parsed.return_path,
         originating_ip=parsed.originating_ip,
+        received_headers=parsed.received_headers,
     )
     parsed_email.spf_pass = header_result.spf_pass
     parsed_email.dkim_pass = header_result.dkim_pass
@@ -181,15 +186,52 @@ def _process_email(db: Session, job: AnalysisJob):
     # Step 6: Attachment analysis
     attachment_result = analyze_attachments(parsed.attachments)
 
+    # Step 6b: Threat intelligence — check extracted URLs against feeds
+    threat_result = None
+    if parsed.urls:
+        try:
+            threat_result = asyncio.run(check_threat_intelligence(parsed.urls[0]))
+            # Persist any hits to the database
+            if threat_result and threat_result.matches:
+                for match in threat_result.matches:
+                    hit = ThreatIntelHit(
+                        analysis_id=analysis_id,
+                        source=match["source"],
+                        matched_url=match.get("url", parsed.urls[0]),
+                    )
+                    db.add(hit)
+        except Exception as exc:
+            logger.warning("threat_intel_failed", analysis_id=analysis_id, error=str(exc))
+
+    # Step 6c: Redirect chain tracing — trace primary URL only for performance
+    redirect_results = []
+    if parsed.urls:
+        try:
+            redirect_result = asyncio.run(trace_redirect_chain(parsed.urls[0]))
+            redirect_results.append(redirect_result)
+        except Exception as exc:
+            logger.warning("redirect_trace_failed", analysis_id=analysis_id, error=str(exc))
+
+    # Step 6d: IP reputation — check originating IP against AbuseIPDB
+    ip_reputation_result = None
+    if parsed.originating_ip:
+        try:
+            ip_reputation_result = asyncio.run(check_ip_reputation(parsed.originating_ip))
+        except Exception as exc:
+            logger.warning("ip_reputation_failed", analysis_id=analysis_id, error=str(exc))
+
     # Step 7: Feature aggregation
     features = build_feature_vector(
         header_result=header_result,
         url_results=url_results,
         domain_whois=domain_whois,
         domain_dns=domain_dns,
+        threat_result=threat_result,
+        redirect_results=redirect_results,
         nlp_result=nlp_result,
         attachment_result=attachment_result,
         homograph_result=homograph_result,
+        ip_reputation_result=ip_reputation_result,
         email_body_text=parsed.body_text,
         email_body_html=parsed.body_html,
         email_urls=parsed.urls,
@@ -258,9 +300,12 @@ def _process_email(db: Session, job: AnalysisJob):
 def _process_url(db: Session, job: AnalysisJob):
     """Process a URL artifact through the pipeline."""
 
+    import asyncio
     from app.services.url_analysis.url_analyzer import analyze_url
     from app.services.domain_intelligence.whois_lookup import whois_lookup, dns_lookup
     from app.services.domain_intelligence.homograph_detector import detect_homograph
+    from app.services.threat_intelligence.threat_intel_service import check_threat_intelligence
+    from app.services.url_analysis.redirect_tracker import trace_redirect_chain
     from app.services.feature_engineering.feature_builder import build_feature_vector
     from app.services.risk_scoring.rule_engine import calculate_risk_score
     from app.services.reporting.report_generator import generate_report
@@ -319,11 +364,36 @@ def _process_url(db: Session, job: AnalysisJob):
         )
         db.add(domain_intel)
 
+    # Threat intelligence — check submitted URL against feeds
+    threat_result = None
+    try:
+        threat_result = asyncio.run(check_threat_intelligence(url))
+        if threat_result and threat_result.matches:
+            for match in threat_result.matches:
+                hit = ThreatIntelHit(
+                    analysis_id=analysis_id,
+                    source=match["source"],
+                    matched_url=match.get("url", url),
+                )
+                db.add(hit)
+    except Exception as exc:
+        logger.warning("threat_intel_failed", analysis_id=analysis_id, error=str(exc))
+
+    # Redirect chain tracing
+    redirect_results = []
+    try:
+        redirect_result = asyncio.run(trace_redirect_chain(url))
+        redirect_results.append(redirect_result)
+    except Exception as exc:
+        logger.warning("redirect_trace_failed", analysis_id=analysis_id, error=str(exc))
+
     # Feature aggregation
     features = build_feature_vector(
         url_results=url_results,
         domain_whois=domain_whois,
         domain_dns=domain_dns,
+        threat_result=threat_result,
+        redirect_results=redirect_results,
         homograph_result=homograph_result,
     )
 
@@ -395,8 +465,12 @@ def _get_feature_category(feature_name: str) -> str:
         "url_obfuscation": ["percent_encoding_count", "hex_encoding_count", "double_slash_redirect",
                             "encoded_characters_ratio", "username_in_url", "mixed_case_domain",
                             "long_query_string"],
+        "redirect_behavior": ["redirect_count", "redirect_to_different_domain",
+                              "redirect_to_ip", "final_domain_mismatch",
+                              "meta_refresh_detected"],
         "threat_intelligence": ["openphish_match", "phishtank_match", "urlhaus_match",
-                                "domain_blacklisted", "ip_blacklisted", "threat_confidence_score"],
+                                "domain_blacklisted", "ip_blacklisted", "threat_confidence_score",
+                                "country_risk_score"],
         "nlp": ["urgency_keyword_count", "credential_request_keywords",
                 "financial_request_keywords", "security_alert_keywords",
                 "threat_language_score", "sentiment_score", "imperative_language_score"],

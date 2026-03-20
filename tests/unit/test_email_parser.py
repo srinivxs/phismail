@@ -59,6 +59,27 @@ class TestParseEmlBytes:
         assert len(result.urls) >= 1
         assert any("paypal-security.evil.ru" in u for u in result.urls)
 
+    def test_extracts_received_headers_list(self, sample_eml_content):
+        result = parse_eml_bytes(sample_eml_content)
+        assert isinstance(result.received_headers, list)
+        assert len(result.received_headers) >= 1
+        assert any("185.100.87.42" in h for h in result.received_headers)
+
+    def test_received_headers_preserves_all_entries(self):
+        eml = b"""From: test@example.com
+To: other@example.com
+Received: from mx3.hop.com by mx4.final.com
+Received: from mx2.relay.com by mx3.hop.com
+Received: from [203.0.113.1] by mx2.relay.com
+Received: from [185.100.87.42] by mx1.origin.com
+
+Just a test.
+"""
+        result = parse_eml_bytes(eml)
+        assert len(result.received_headers) == 4
+        assert any("mx3.hop.com" in h for h in result.received_headers)
+        assert any("185.100.87.42" in h for h in result.received_headers)
+
     def test_skips_private_ips_for_originating(self):
         eml = b"""From: test@example.com
 To: other@example.com

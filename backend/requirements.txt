@@ -22,6 +22,9 @@ tldextract==5.1.3
 dnspython==2.7.0
 python-whois==0.9.4
 
+# --- Email Authentication ---
+pyspf==2.0.14
+
 # --- Homograph Detection ---
 confusables==1.2.0
 

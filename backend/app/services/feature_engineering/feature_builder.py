@@ -22,6 +22,7 @@ def build_feature_vector(
     attachment_result: Optional[Any] = None,
     redirect_results: Optional[List[Any]] = None,
     homograph_result: Optional[Any] = None,
+    ip_reputation_result: Optional[Any] = None,
     email_body_text: Optional[str] = None,
     email_body_html: Optional[str] = None,
     email_urls: Optional[List[str]] = None,
@@ -60,37 +61,35 @@ def build_feature_vector(
         )
 
     # =========================================================================
-    # 2. URL Structural Features (12)
+    # 2. URL Structural Features (12) — worst-case across ALL URLs
     # =========================================================================
     if url_results:
-        primary_url = url_results[0] if url_results else None
-        if primary_url:
-            features["url_length"] = float(primary_url.url_length)
-            features["num_dots"] = float(primary_url.num_dots)
-            features["num_subdomains"] = float(primary_url.num_subdomains)
-            features["num_hyphens"] = float(primary_url.num_hyphens)
-            features["num_special_chars"] = float(primary_url.num_special_chars)
-            features["contains_ip_address"] = float(primary_url.contains_ip)
-            features["contains_at_symbol"] = float(primary_url.contains_at_symbol)
-            features["num_query_parameters"] = float(primary_url.num_query_parameters)
-            features["url_entropy_score"] = float(primary_url.entropy_score)
-            features["num_fragments"] = float(primary_url.num_fragments)
-            features["has_https"] = float(primary_url.has_https)
-            features["url_shortened"] = float(primary_url.is_shortened)
+        # Suspicion = max across all URLs (any URL being suspicious matters)
+        features["url_length"] = max(float(u.url_length) for u in url_results)
+        features["num_dots"] = max(float(u.num_dots) for u in url_results)
+        features["num_subdomains"] = max(float(u.num_subdomains) for u in url_results)
+        features["num_hyphens"] = max(float(u.num_hyphens) for u in url_results)
+        features["num_special_chars"] = max(float(u.num_special_chars) for u in url_results)
+        features["contains_ip_address"] = max(float(u.contains_ip) for u in url_results)
+        features["contains_at_symbol"] = max(float(u.contains_at_symbol) for u in url_results)
+        features["num_query_parameters"] = max(float(u.num_query_parameters) for u in url_results)
+        features["url_entropy_score"] = max(float(u.entropy_score) for u in url_results)
+        features["num_fragments"] = max(float(u.num_fragments) for u in url_results)
+        # has_https: min across all URLs (lack of HTTPS is suspicious)
+        features["has_https"] = min(float(u.has_https) for u in url_results)
+        features["url_shortened"] = max(float(u.is_shortened) for u in url_results)
 
     # =========================================================================
-    # 3. URL Obfuscation Indicators (7)
+    # 3. URL Obfuscation Indicators (7) — worst-case across ALL URLs
     # =========================================================================
     if url_results:
-        primary_url = url_results[0] if url_results else None
-        if primary_url:
-            features["percent_encoding_count"] = float(primary_url.percent_encoding_count)
-            features["hex_encoding_count"] = float(primary_url.hex_encoding_count)
-            features["double_slash_redirect"] = float(primary_url.double_slash_redirect)
-            features["encoded_characters_ratio"] = float(primary_url.encoded_characters_ratio)
-            features["username_in_url"] = float(primary_url.username_in_url)
-            features["mixed_case_domain"] = float(primary_url.mixed_case_domain)
-            features["long_query_string"] = float(primary_url.long_query_string)
+        features["percent_encoding_count"] = max(float(u.percent_encoding_count) for u in url_results)
+        features["hex_encoding_count"] = max(float(u.hex_encoding_count) for u in url_results)
+        features["double_slash_redirect"] = max(float(u.double_slash_redirect) for u in url_results)
+        features["encoded_characters_ratio"] = max(float(u.encoded_characters_ratio) for u in url_results)
+        features["username_in_url"] = max(float(u.username_in_url) for u in url_results)
+        features["mixed_case_domain"] = max(float(u.mixed_case_domain) for u in url_results)
+        features["long_query_string"] = max(float(u.long_query_string) for u in url_results)
 
     # =========================================================================
     # 4. Domain Intelligence Features
@@ -121,7 +120,10 @@ def build_feature_vector(
     features.setdefault("domain_popularity_rank", 0.0)
     features.setdefault("asn_reputation_score", 0.0)
     features.setdefault("hosting_provider_known", 0.0)
-    features.setdefault("country_risk_score", 0.0)
+    features["country_risk_score"] = (
+        float(ip_reputation_result.country_risk_score)
+        if ip_reputation_result else 0.0
+    )
 
     # =========================================================================
     # 6. Threat Intelligence Features (6)
@@ -131,7 +133,10 @@ def build_feature_vector(
         features["phishtank_match"] = float(threat_result.phishtank_match)
         features["urlhaus_match"] = float(threat_result.urlhaus_match)
         features["domain_blacklisted"] = float(threat_result.domain_blacklisted)
-        features["ip_blacklisted"] = 0.0
+        features["ip_blacklisted"] = (
+            float(ip_reputation_result.ip_blacklisted)
+            if ip_reputation_result else 0.0
+        )
         features["threat_confidence_score"] = float(threat_result.confidence_score)
 
     # =========================================================================
@@ -186,7 +191,7 @@ def build_feature_vector(
             features["brand_sender_domain_match"] = 0.0
             features["brand_sender_domain_mismatch"] = float(brand is not None)
 
-    # URL domain vs sender domain consistency
+    # URL domain vs sender domain consistency — worst-case across ALL URLs
     CDN_DOMAINS = {
         "cloudfront.net", "akamai.net", "akamaized.net", "fastly.net",
         "cdn.shopify.com", "cdn.jsdelivr.net", "cloudflare.com",
@@ -194,44 +199,57 @@ def build_feature_vector(
     }
     if url_results and header_result:
         import tldextract as _tld
-        url_domain = (url_results[0].domain or "") if url_results else ""
         sender_dom = getattr(header_result, "sender_domain", "") or ""
-        if url_domain and sender_dom:
-            url_extracted = _tld.extract(url_domain)
-            url_root = url_extracted.domain.lower()
-            url_suffix = url_extracted.suffix.lower()
-            url_registered = f"{url_root}.{url_suffix}"
-            sender_extracted = _tld.extract(sender_dom if "." in sender_dom else f"x.{sender_dom}")
-            sender_root = sender_extracted.domain.lower()
-            sender_suffix = sender_extracted.suffix.lower()
-            sender_registered = f"{sender_root}.{sender_suffix}"
 
-            domains_match = bool(url_root and sender_root and (url_root == sender_root or url_root in sender_root or sender_root in url_root))
-            features["url_domain_matches_sender"] = float(domains_match)
-            features["url_domain_unrelated_to_sender"] = float(not domains_match)
+        any_unrelated = False
+        any_cdn = False
+        any_subdomain = False
+        any_match = False
 
-            # Subdomain-of-sender: url_domain ends with sender's registered domain
-            is_subdomain_of_sender = (
-                url_registered == sender_registered
-                or url_domain.endswith(f".{sender_registered}")
-            )
-            features["url_domain_subdomain_of_sender"] = float(is_subdomain_of_sender)
+        for u in url_results:
+            url_domain = (u.domain or "")
+            if not url_domain:
+                continue
+            if sender_dom:
+                url_extracted = _tld.extract(url_domain)
+                url_root = url_extracted.domain.lower()
+                url_suffix = url_extracted.suffix.lower()
+                url_registered = f"{url_root}.{url_suffix}"
+                sender_extracted = _tld.extract(sender_dom if "." in sender_dom else f"x.{sender_dom}")
+                sender_root = sender_extracted.domain.lower()
+                sender_suffix = sender_extracted.suffix.lower()
+                sender_registered = f"{sender_root}.{sender_suffix}"
 
-            # CDN domain recognition
+                domains_match = bool(url_root and sender_root and (url_root == sender_root or url_root in sender_root or sender_root in url_root))
+                if domains_match:
+                    any_match = True
+                else:
+                    any_unrelated = True
+
+                is_subdomain_of_sender = (
+                    url_registered == sender_registered
+                    or url_domain.endswith(f".{sender_registered}")
+                )
+                if is_subdomain_of_sender:
+                    any_subdomain = True
+
             is_cdn = any(url_domain == cdn or url_domain.endswith(f".{cdn}") for cdn in CDN_DOMAINS)
-            features["url_domain_cdn"] = float(is_cdn)
-        else:
-            features["url_domain_matches_sender"] = 0.0
-            features["url_domain_unrelated_to_sender"] = 0.0
-            features["url_domain_subdomain_of_sender"] = 0.0
-            features["url_domain_cdn"] = 0.0
+            if is_cdn:
+                any_cdn = True
+
+        # Worst-case: if ANY URL is unrelated, flag it
+        features["url_domain_matches_sender"] = float(any_match and not any_unrelated)
+        features["url_domain_unrelated_to_sender"] = float(any_unrelated)
+        features["url_domain_subdomain_of_sender"] = float(any_subdomain)
+        features["url_domain_cdn"] = float(any_cdn)
     elif url_results:
         # URL present but no sender domain — check CDN only
         import tldextract as _tld
-        url_domain = (url_results[0].domain or "") if url_results else ""
-        CDN_DOMAINS_LOCAL = CDN_DOMAINS
-        is_cdn = any(url_domain == cdn or url_domain.endswith(f".{cdn}") for cdn in CDN_DOMAINS_LOCAL)
-        features["url_domain_cdn"] = float(is_cdn)
+        any_cdn = any(
+            any((u.domain or "") == cdn or (u.domain or "").endswith(f".{cdn}") for cdn in CDN_DOMAINS)
+            for u in url_results
+        )
+        features["url_domain_cdn"] = float(any_cdn)
         features.setdefault("url_domain_matches_sender", 0.0)
         features.setdefault("url_domain_unrelated_to_sender", 0.0)
         features.setdefault("url_domain_subdomain_of_sender", 0.0)

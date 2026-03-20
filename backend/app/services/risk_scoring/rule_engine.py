@@ -47,6 +47,8 @@ SUSPICION_WEIGHTS: Dict[str, float] = {
     "phishtank_match": 50.0,
     "urlhaus_match": 50.0,
     "domain_blacklisted": 50.0,
+    "ip_blacklisted": 40.0,
+    "country_risk_score": 10.0,
 
     # --- Brand impersonation (contextual, §4) ---
     "brand_sender_domain_mismatch": 30.0,
@@ -150,6 +152,7 @@ SEVERITY_MAP: Dict[str, str] = {
     "phishtank_match": "CRITICAL",
     "urlhaus_match": "CRITICAL",
     "domain_blacklisted": "CRITICAL",
+    "ip_blacklisted": "HIGH",
 
     # HIGH
     "domain_very_recent": "HIGH",
@@ -182,6 +185,7 @@ SEVERITY_MAP: Dict[str, str] = {
     "mixed_case_domain": "LOW",
     "percent_encoding_count": "LOW",
     "sender_domain_mismatch": "LOW",
+    "country_risk_score": "LOW",
 
     # HIGH — new phishing detection signals
     "display_name_brand_spoofing": "HIGH",
@@ -382,6 +386,16 @@ def _build_detail(feature_name: str, feature_value: float, context: Dict) -> str
         return "URL matched in URLhaus malware feed — associated with malware distribution."
     if feature_name == "domain_blacklisted":
         return f"Domain '{primary_domain}' is on a threat intelligence blocklist."
+    if feature_name == "ip_blacklisted":
+        return (
+            "Originating IP address has a high abuse confidence score on AbuseIPDB — "
+            "this IP is associated with malicious activity."
+        )
+    if feature_name == "country_risk_score":
+        return (
+            "Originating IP is geolocated to a country frequently associated "
+            "with phishing infrastructure."
+        )
     if feature_name == "num_forms":
         return (
             f"{int(feature_value)} HTML form(s) in email body — "

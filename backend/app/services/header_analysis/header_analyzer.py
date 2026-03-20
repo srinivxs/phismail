@@ -4,7 +4,7 @@ Validates SPF, DKIM, DMARC and detects infrastructure anomalies.
 """
 
 import re
-from typing import Dict, Optional, Any
+from typing import Dict, List, Optional, Any
 from app.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -94,27 +94,45 @@ def analyze_headers(
     reply_to: Optional[str],
     return_path: Optional[str],
     originating_ip: Optional[str] = None,
+    received_headers: Optional[List[str]] = None,
 ) -> HeaderAnalysisResult:
     """Analyze email headers for authentication and anomalies."""
 
     result = HeaderAnalysisResult()
     result.originating_ip = originating_ip
 
-    # Count received headers (SMTP hops)
-    received_list = [v for k, v in headers.items() if k.lower() == "received"]
-    if isinstance(received_list, str):
-        received_list = [received_list]
-    result.num_received_headers = len(received_list) if isinstance(received_list, list) else 0
+    # Count received headers (SMTP hops) — use the dedicated list when available
+    if received_headers is not None:
+        result.num_received_headers = len(received_headers)
+    else:
+        # Legacy fallback: dict-based (only captures last Received header)
+        received_list = [v for k, v in headers.items() if k.lower() == "received"]
+        if isinstance(received_list, str):
+            received_list = [received_list]
+        result.num_received_headers = len(received_list) if isinstance(received_list, list) else 0
     result.smtp_hops = result.num_received_headers
 
-    # Parse Authentication-Results header
+    # --- SPF: live DNS validation when IP and sender domain are available ---
+    sender_domain = _extract_domain(sender)
+    spf_live = validate_spf_live(originating_ip, sender_domain)
+
+    if spf_live is not None:
+        # Live validation succeeded — use real DNS result instead of trusting header
+        result.spf_pass = spf_live
+    else:
+        # Fallback to header parsing when live validation is not possible
+        # (e.g., no originating IP, no sender domain, DNS unreachable)
+        auth_results = headers.get("Authentication-Results", "")
+        result.spf_pass = _check_auth_result(auth_results, "spf")
+
+    # --- DKIM/DMARC: still header-based (DKIM needs raw bytes, DMARC needs alignment) ---
     auth_results = headers.get("Authentication-Results", "")
-    result.spf_pass = _check_auth_result(auth_results, "spf")
     result.dkim_pass = _check_auth_result(auth_results, "dkim")
     result.dmarc_pass = _check_auth_result(auth_results, "dmarc")
 
     result.authentication_results = {
         "spf": "pass" if result.spf_pass else ("fail" if result.spf_pass is False else "unknown"),
+        "spf_source": "live_dns" if spf_live is not None else "header",
         "dkim": "pass" if result.dkim_pass else ("fail" if result.dkim_pass is False else "unknown"),
         "dmarc": "pass" if result.dmarc_pass else ("fail" if result.dmarc_pass is False else "unknown"),
     }
@@ -136,7 +154,6 @@ def analyze_headers(
             break
 
     # Check reply-to mismatch
-    sender_domain = _extract_domain(sender)
     reply_to_domain = _extract_domain(reply_to)
     return_path_domain = _extract_domain(return_path)
 
@@ -204,6 +221,45 @@ def _check_auth_result(auth_header: str, mechanism: str) -> Optional[bool]:
             return False
 
     return None
+
+
+def validate_spf_live(ip: Optional[str], sender_domain: Optional[str]) -> Optional[bool]:
+    """
+    Perform live SPF validation via DNS lookup using pyspf.
+
+    Returns:
+        True  — SPF pass (IP is authorized to send for this domain)
+        False — SPF fail/softfail/permerror (IP is NOT authorized)
+        None  — cannot validate (missing IP/domain, DNS error, or no SPF record)
+    """
+    if not ip or not sender_domain:
+        return None
+
+    try:
+        import spf  # noqa: F811 — imported here for graceful degradation if pyspf not installed
+        # spf.check returns (result, code, explanation)
+        # result is one of: 'pass', 'fail', 'softfail', 'neutral', 'none',
+        #                    'permerror', 'temperror'
+        result, _code, _explanation = spf.check(i=ip, s=f"postmaster@{sender_domain}", h=sender_domain)
+
+        logger.debug(
+            "spf_live_validation",
+            ip=ip,
+            domain=sender_domain,
+            result=result,
+        )
+
+        if result == "pass":
+            return True
+        elif result in ("fail", "softfail", "permerror"):
+            return False
+        else:
+            # 'neutral', 'none', 'temperror' — inconclusive, fall back to header
+            return None
+
+    except Exception as exc:
+        logger.warning("spf_live_validation_failed", ip=ip, domain=sender_domain, error=str(exc))
+        return None
 
 
 def _extract_display_name(address: Optional[str]) -> Optional[str]:

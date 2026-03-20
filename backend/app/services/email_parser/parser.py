@@ -27,6 +27,7 @@ class ParsedEmailResult:
         self.body_text: Optional[str] = None
         self.body_html: Optional[str] = None
         self.headers: Dict[str, Any] = {}
+        self.received_headers: List[str] = []
         self.attachments: List[Dict[str, Any]] = []
         self.urls: List[str] = []
         self.originating_ip: Optional[str] = None
@@ -53,8 +54,11 @@ def parse_eml_bytes(raw_content: bytes) -> ParsedEmailResult:
     result.return_path = msg.get("Return-Path", "")
     result.subject = msg.get("Subject", "")
 
-    # Store all headers
+    # Store all headers (dict — note: duplicate keys like Received keep last value only)
     result.headers = {key: str(value) for key, value in msg.items()}
+
+    # Store ALL Received headers separately — preserves the full SMTP hop chain
+    result.received_headers = [str(h) for h in msg.get_all("Received", [])]
 
     # Extract originating IP from Received headers
     result.originating_ip = _extract_originating_ip(msg)

@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     phishtank_api_key: str = ""
     urlhaus_auth_key: str = ""
     openphish_feed_url: str = "https://openphish.com/feed.txt"
+    abuseipdb_api_key: str = ""
 
     # --- Cache TTL (seconds) ---
     cache_ttl_domain_intel: int = 86400  # 24 hours

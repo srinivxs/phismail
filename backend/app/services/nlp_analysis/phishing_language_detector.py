@@ -4,6 +4,7 @@ Regex-based NLP for detecting social engineering patterns in email text.
 """
 
 import re
+import unicodedata
 from typing import Optional
 
 from app.core.logging import get_logger
@@ -128,6 +129,10 @@ def analyze_phishing_language(
 
     if not combined.strip():
         return result
+
+    # Anti-evasion: normalize Unicode and strip zero-width characters
+    combined = unicodedata.normalize("NFKD", combined)
+    combined = re.sub(r"[\u200b\u200c\u200d\ufeff\u00ad\u2060]", "", combined)
 
     text_lower = combined.lower()
 

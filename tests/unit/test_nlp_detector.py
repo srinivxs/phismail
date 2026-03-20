@@ -70,6 +70,22 @@ class TestAnalyzePhishingLanguage:
         assert result.urgency_keyword_count == 0
         assert result.threat_language_score == 0.0
 
+    def test_detects_zero_width_char_evasion(self):
+        """Zero-width characters inserted into keywords should be stripped."""
+        # "ur\u200bgent" with zero-width space splitting "urgent"
+        result = analyze_phishing_language(
+            body_text="ur\u200bgent: act now or your account will be su\u200dspended",
+        )
+        assert result.urgency_keyword_count >= 2
+
+    def test_detects_unicode_normalized_keywords(self):
+        """NFKD normalization should catch fullwidth character evasion."""
+        # Fullwidth "Ｕｒｇｅｎｔ" normalizes to "Urgent" under NFKD
+        result = analyze_phishing_language(
+            body_text="\uff35\uff52\uff47\uff45\uff4e\uff54: act now immediately",
+        )
+        assert result.urgency_keyword_count >= 1
+
     def test_detected_patterns_populated(self):
         result = analyze_phishing_language(
             body_text="Urgent! Verify your account immediately. Your payment has failed.",
