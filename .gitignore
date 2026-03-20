@@ -58,6 +58,7 @@ storage/emails/
 
 # ── Large dataset files ───────────────────────────────────────────────────────
 dataset/*.csv
+datasets/
 
 # ── Internal / AI tooling files ──────────────────────────────────────────────
 .claude/
