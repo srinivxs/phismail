@@ -1,0 +1,95 @@
+Received: from vps-mailer.hostingcheap.bd (vps-mailer.hostingcheap.bd [103.108.22.71])
+	by mx.bankingcustomer.com (Postfix) with ESMTP id F9G0H1I2J3
+	for <anna.patel@bankingcustomer.com>; Thu, 13 Mar 2026 19:55:30 +0000 (UTC)
+From: "Chase Bank Security" <alerts@chase-online-banking-secure.com>
+To: anna.patel@bankingcustomer.com
+Reply-To: chase.security.dept@protonmail.ch
+Subject: Security Alert: Unauthorized transaction detected on your account
+Date: Thu, 13 Mar 2026 19:55:30 +0000
+Message-ID: <bank-phish-008@hostingcheap.bd>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_Part_008_BANK"
+Authentication-Results: mx.bankingcustomer.com;
+	spf=fail (domain chase-online-banking-secure.com does not designate 103.108.22.71 as permitted sender);
+	dkim=none;
+	dmarc=fail action=reject header.from=chase-online-banking-secure.com
+
+------=_Part_008_BANK
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+SECURITY ALERT - Chase Bank
+
+Dear Valued Customer,
+
+We detected an unauthorized transaction on your Chase checking account:
+
+Transaction Details:
+- Amount: $1,249.99
+- Merchant: WIRE_TRANSFER_INTL
+- Date: March 13, 2026
+- Location: Lagos, Nigeria
+
+If you did not authorize this transaction, you must act immediately to prevent further unauthorized access to your account.
+
+Click here to verify your identity and dispute this transaction:
+http://chase-online-banking-secure.com/secure/verify-transaction?acct=XXXX4821&ref=SEC2026
+
+WARNING: If you do not respond within 24 hours, we will assume the transaction was authorized and your dispute window will close permanently.
+
+To protect your account:
+1. Verify your identity immediately
+2. Update your password and security questions
+3. Confirm your billing information
+
+Chase Customer Security Team
+JPMorgan Chase Bank, N.A. Member FDIC
+
+------=_Part_008_BANK
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px;">
+<div style="max-width: 600px; margin: auto; background: white; border-radius: 4px; overflow: hidden;">
+<div style="background: #117aca; padding: 20px;">
+<span style="color: white; font-size: 24px; font-weight: bold;">CHASE</span>
+</div>
+<div style="padding: 25px;">
+<div style="background: #fff3cd; border-left: 4px solid #dc3545; padding: 15px; margin-bottom: 20px;">
+<strong style="color: #dc3545;">⚠ SECURITY ALERT</strong>
+<p style="margin: 10px 0 0 0;">Unauthorized transaction detected on your account</p>
+</div>
+
+<p>Dear Valued Customer,</p>
+<p>We detected an <strong>unauthorized transaction</strong> on your Chase checking account:</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+<tr><td style="padding: 10px; background: #f8f9fa; border: 1px solid #dee2e6;"><strong>Amount:</strong></td><td style="padding: 10px; border: 1px solid #dee2e6; color: #dc3545;"><strong>$1,249.99</strong></td></tr>
+<tr><td style="padding: 10px; background: #f8f9fa; border: 1px solid #dee2e6;"><strong>Merchant:</strong></td><td style="padding: 10px; border: 1px solid #dee2e6;">WIRE_TRANSFER_INTL</td></tr>
+<tr><td style="padding: 10px; background: #f8f9fa; border: 1px solid #dee2e6;"><strong>Location:</strong></td><td style="padding: 10px; border: 1px solid #dee2e6;">Lagos, Nigeria</td></tr>
+</table>
+
+<p><strong style="color: #dc3545;">WARNING:</strong> If you do not respond within <strong>24 hours</strong>, we will assume the transaction was authorized and your dispute window will <strong>close permanently</strong>.</p>
+
+<p style="text-align: center; margin: 25px 0;">
+<a href="http://chase-online-banking-secure.com/secure/verify-transaction?acct=XXXX4821&ref=SEC2026" style="background: #117aca; color: white; padding: 14px 40px; text-decoration: none; border-radius: 4px; font-size: 16px;">Verify & Dispute Transaction</a>
+</p>
+
+<p>To protect your account:</p>
+<ol>
+<li><strong>Verify your identity</strong> immediately</li>
+<li>Update your <strong>password</strong> and security questions</li>
+<li>Confirm your <strong>billing information</strong></li>
+</ol>
+</div>
+<div style="background: #f8f9fa; padding: 15px; text-align: center; font-size: 11px; color: #999;">
+JPMorgan Chase Bank, N.A. Member FDIC. Equal Opportunity Lender.
+</div>
+</div>
+</body>
+</html>
+
+------=_Part_008_BANK--

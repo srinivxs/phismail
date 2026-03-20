@@ -1,0 +1,50 @@
+Received: from zombie-pc.botnet.eg (zombie-pc.botnet.eg [156.219.44.88])
+	by mx.victim-org.com (Postfix) with ESMTP id K2L3M4N5O6
+	for <user@victim-org.com>; Sun, 02 Mar 2026 23:11:07 +0000 (UTC)
+From: "Document Scanner" <scanner@victim-org.com.zombie-pc.botnet.eg>
+To: user@victim-org.com
+Subject: Scanned Document from MFP-3F-Reception
+Date: Sun, 02 Mar 2026 23:11:07 +0000
+Message-ID: <double-ext-019@botnet.eg>
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="----=_Part_019_DOUBLEEXT"
+Authentication-Results: mx.victim-org.com;
+	spf=fail;
+	dkim=none;
+	dmarc=fail action=none header.from=victim-org.com.zombie-pc.botnet.eg
+
+------=_Part_019_DOUBLEEXT
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+This document was scanned and sent to you from the multifunction printer on 3rd Floor Reception.
+
+Device: Xerox WorkCentre 7845
+Pages: 3
+Resolution: 300 DPI
+
+Please open the attached document.
+
+This is an automated message from the document management system. Do not reply.
+
+------=_Part_019_DOUBLEEXT
+Content-Type: application/octet-stream;
+	name="Scan_20260302_0014.pdf.bat"
+Content-Disposition: attachment;
+	filename="Scan_20260302_0014.pdf.bat"
+Content-Transfer-Encoding: base64
+
+QGVjaG8gb2ZmDQpGYWtlUGxhY2Vob2xkZXJGb3JUZXN0aW5nT25seQ0KcGF1c2U=
+
+------=_Part_019_DOUBLEEXT
+Content-Type: application/x-msdownload;
+	name="Scan_20260302_0015.jpg.exe"
+Content-Disposition: attachment;
+	filename="Scan_20260302_0015.jpg.exe"
+Content-Transfer-Encoding: base64
+
+TVqQAAMAAAAFakeExecutablePlaceholderForTestingPurposesOnlyAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+------=_Part_019_DOUBLEEXT--

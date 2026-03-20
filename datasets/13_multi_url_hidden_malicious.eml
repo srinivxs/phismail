@@ -1,0 +1,93 @@
+Received: from smtp-relay.phishops.gh (smtp-relay.phishops.gh [197.255.12.34])
+	by mx.corporate-user.com (Postfix) with ESMTP id W3X4Y5Z6A7
+	for <emily.jones@corporate-user.com>; Sat, 08 Mar 2026 20:19:33 +0000 (UTC)
+From: "Google Workspace Admin" <admin@google-workspace-admin-alerts.com>
+To: emily.jones@corporate-user.com
+Reply-To: workspace-admin@cock.li
+Subject: Google Workspace: Important security update for your organization
+Date: Sat, 08 Mar 2026 20:19:33 +0000
+Message-ID: <multiurl-013@phishops.gh>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_Part_013_MULTIURL"
+Authentication-Results: mx.corporate-user.com;
+	spf=fail (domain google-workspace-admin-alerts.com does not designate 197.255.12.34 as permitted sender);
+	dkim=none;
+	dmarc=fail action=reject header.from=google-workspace-admin-alerts.com
+
+------=_Part_013_MULTIURL
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+Dear Workspace Administrator,
+
+Google has released a critical security update for Google Workspace. All organization administrators must review and acknowledge the new security policies.
+
+What's changing:
+- Enhanced two-factor authentication requirements
+- Updated data loss prevention policies
+- New admin console security features
+
+Learn more about these changes:
+https://workspace.google.com/security-updates/2026-q1
+
+Review the full documentation:
+https://support.google.com/a/answer/security-best-practices
+
+REQUIRED ACTION: Acknowledge the security policy update by signing in to your admin console:
+http://google-workspace-admin-alerts.com/admin/security-acknowledge?org=corporate-user.com&admin=emily.jones
+
+Google Cloud Terms of Service:
+https://cloud.google.com/terms
+
+If you need assistance, visit Google Workspace support:
+https://support.google.com/a/
+
+This action is required within 48 hours or your organization's admin privileges will be temporarily suspended.
+
+Google Workspace Team
+
+------=_Part_013_MULTIURL
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+<body style="font-family: Google Sans, Roboto, sans-serif; background: #f8f9fa; padding: 20px;">
+<div style="max-width: 600px; margin: auto; background: white; border-radius: 8px; overflow: hidden;">
+<div style="padding: 20px; border-bottom: 3px solid #4285f4;">
+<span style="font-size: 20px; color: #5f6368;">Google</span> <span style="color: #4285f4;">Workspace</span>
+</div>
+<div style="padding: 25px;">
+<h2 style="color: #202124;">Critical Security Update</h2>
+<p>Dear Workspace Administrator,</p>
+<p>Google has released a <strong>critical security update</strong> for Google Workspace. All organization administrators must review and acknowledge the new security policies.</p>
+
+<h3 style="color: #5f6368;">What's changing:</h3>
+<ul>
+<li>Enhanced two-factor authentication requirements</li>
+<li>Updated data loss prevention policies</li>
+<li>New admin console security features</li>
+</ul>
+
+<p>Learn more: <a href="https://workspace.google.com/security-updates/2026-q1">Security Updates Overview</a></p>
+<p>Full documentation: <a href="https://support.google.com/a/answer/security-best-practices">Security Best Practices</a></p>
+
+<div style="background: #fef7e0; border: 1px solid #f9ab00; border-radius: 4px; padding: 15px; margin: 20px 0;">
+<strong>⚠ Required Action:</strong> Acknowledge the security policy update within <strong>48 hours</strong> or your organization's admin privileges will be temporarily <strong>suspended</strong>.
+</div>
+
+<p style="text-align: center; margin: 25px 0;">
+<a href="http://google-workspace-admin-alerts.com/admin/security-acknowledge?org=corporate-user.com&admin=emily.jones" style="background: #1a73e8; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-size: 14px;">Acknowledge Security Update</a>
+</p>
+
+<p style="font-size: 12px; color: #5f6368;">
+<a href="https://cloud.google.com/terms">Terms of Service</a> |
+<a href="https://support.google.com/a/">Get Support</a>
+</p>
+</div>
+</div>
+</body>
+</html>
+
+------=_Part_013_MULTIURL--

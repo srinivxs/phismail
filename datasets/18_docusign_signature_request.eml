@@ -1,0 +1,56 @@
+Received: from relay-node.phishinfra.ma (relay-node.phishinfra.ma [196.12.78.90])
+	by mx.realestate-firm.com (Postfix) with ESMTP id F7G8H9I0J1
+	for <broker@realestate-firm.com>; Mon, 03 Mar 2026 14:37:22 +0000 (UTC)
+From: "DocuSign" <dse@docusign-signing-service.com>
+To: broker@realestate-firm.com
+Subject: Please review and sign: Property_Purchase_Agreement_1847_Oak.pdf
+Date: Mon, 03 Mar 2026 14:37:22 +0000
+Message-ID: <docusign-018@phishinfra.ma>
+MIME-Version: 1.0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Authentication-Results: mx.realestate-firm.com;
+	spf=fail (domain docusign-signing-service.com does not designate 196.12.78.90 as permitted sender);
+	dkim=none;
+	dmarc=fail action=none header.from=docusign-signing-service.com
+
+<!DOCTYPE html>
+<html>
+<body style="font-family: Helvetica Neue, Arial, sans-serif; background: #f4f4f4; padding: 20px; margin: 0;">
+<div style="max-width: 560px; margin: auto; background: white; border-radius: 4px; overflow: hidden;">
+<div style="background: white; padding: 20px; border-bottom: 3px solid #ffc829;">
+<img alt="DocuSign" style="height: 28px;" src="http://docusign-signing-service.com/img/logo.png">
+</div>
+<div style="padding: 30px;">
+<h2 style="color: #333; margin-top: 0;">Review and sign document</h2>
+
+<p><strong>Victoria Chen</strong> sent you a document to review and sign.</p>
+
+<div style="background: #f9f9f9; border: 1px solid #e8e8e8; border-radius: 4px; padding: 15px; margin: 20px 0;">
+<p style="margin: 0 0 8px;"><strong>📄 Property_Purchase_Agreement_1847_Oak.pdf</strong></p>
+<p style="margin: 0; font-size: 13px; color: #666;">Sent by: Victoria Chen (victoria.chen@chen-properties.com)</p>
+<p style="margin: 5px 0 0; font-size: 13px; color: #666;">Expires: March 5, 2026</p>
+</div>
+
+<p style="text-align: center; margin: 25px 0;">
+<a href="http://docusign-signing-service.com/signing/d/review?envelopeId=a8b9c0d1-e2f3-4567-8901-abcdef123456&recipientId=broker@realestate-firm.com" style="background: #ffc829; color: #333; padding: 14px 40px; text-decoration: none; border-radius: 4px; font-size: 16px; font-weight: bold;">REVIEW DOCUMENT</a>
+</p>
+
+<p style="font-size: 13px; color: #666;">This document expires in <strong>48 hours</strong>. Failure to sign will delay the closing.</p>
+
+<hr style="border: none; border-top: 1px solid #e8e8e8; margin: 25px 0;">
+
+<p style="font-size: 11px; color: #999;">
+<strong>Do Not Share This Email</strong> — This email contains a secure link to DocuSign. Please do not share this email, link, or access code with others.
+</p>
+
+<p style="font-size: 11px; color: #999;">
+<strong>About DocuSign:</strong> Sign documents electronically in just minutes. It's safe, secure, and legally binding.
+</p>
+</div>
+<div style="background: #333; padding: 15px; text-align: center; font-size: 11px; color: #999;">
+DocuSign, Inc. 221 Main St, Suite 1550, San Francisco, CA 94105
+</div>
+</div>
+</body>
+</html>

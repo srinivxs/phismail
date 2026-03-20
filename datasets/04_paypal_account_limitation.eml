@@ -1,0 +1,84 @@
+Received: from spamhost.cheapvps.ng (spamhost.cheapvps.ng [41.203.78.12])
+	by mx.personalmail.com (Postfix) with ESMTP id K3L4M5N6O7
+	for <mike.johnson@personalmail.com>; Mon, 17 Mar 2026 13:21:33 +0000 (UTC)
+From: "PayPal Security" <service@paypa1-account-verify.com>
+To: mike.johnson@personalmail.com
+Reply-To: paypal-support-case@yandex.com
+Subject: [Action Required] Your PayPal account has been limited - Verify your identity
+Date: Mon, 17 Mar 2026 13:21:33 +0000
+Message-ID: <paypal-phish-004@cheapvps.ng>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_Part_004_PAYPAL"
+Authentication-Results: mx.personalmail.com;
+	spf=fail (domain paypa1-account-verify.com does not designate 41.203.78.12 as permitted sender);
+	dkim=none;
+	dmarc=fail action=reject header.from=paypa1-account-verify.com
+
+------=_Part_004_PAYPAL
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+Dear Customer,
+
+We detected unusual activity on your PayPal account. As a security measure, we have temporarily limited your account.
+
+What happened?
+We noticed a suspicious login attempt from an unrecognized device in an unusual location.
+
+What you need to do:
+You must verify your identity within 24 hours or your account will be permanently suspended and any remaining balance will be frozen.
+
+Click here to restore your account access:
+http://paypa1-account-verify.com/signin/challenge/verify?token=e9f2a1b3c4d5&locale=en_US
+
+If you do not verify your account:
+- Your account will be permanently terminated
+- Any pending transactions will be cancelled
+- Your funds will be held for 180 days
+
+Please update your billing information and confirm your identity immediately.
+
+Sincerely,
+PayPal Security Team
+
+Please do not reply to this email. This mailbox is not monitored.
+
+------=_Part_004_PAYPAL
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+<body style="font-family: Helvetica, Arial, sans-serif; background: #f5f7fa; margin: 0; padding: 20px;">
+<div style="max-width: 600px; margin: auto; background: white; border-radius: 8px; overflow: hidden;">
+<div style="background: #003087; padding: 20px; text-align: center;">
+<span style="color: white; font-size: 24px; font-weight: bold;">Pay<span style="color: #009cde;">Pal</span></span>
+</div>
+<div style="padding: 30px;">
+<h2 style="color: #2c2e2f;">Your account has been limited</h2>
+<p>Dear Customer,</p>
+<p>We detected <strong>unusual activity</strong> on your PayPal account. As a security measure, we have temporarily <strong>limited your account</strong>.</p>
+<div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 15px; margin: 20px 0;">
+<strong>⚠ Security Alert:</strong> We noticed a suspicious login attempt from an unrecognized device.
+</div>
+<p>You must <strong>verify your identity within 24 hours</strong> or your account will be <strong>permanently suspended</strong> and any remaining balance will be <strong>frozen</strong>.</p>
+<p style="text-align: center; margin: 30px 0;">
+<a href="http://paypa1-account-verify.com/signin/challenge/verify?token=e9f2a1b3c4d5&locale=en_US" style="background: #0070ba; color: white; padding: 14px 40px; text-decoration: none; border-radius: 24px; font-size: 16px;">Verify My Account</a>
+</p>
+<p><strong>If you do not verify your account:</strong></p>
+<ul>
+<li>Your account will be permanently terminated</li>
+<li>Any pending transactions will be cancelled</li>
+<li>Your funds will be held for 180 days</li>
+</ul>
+<p>Please <strong>update your billing information</strong> and <strong>confirm your identity immediately</strong>.</p>
+</div>
+<div style="background: #f5f7fa; padding: 15px; text-align: center; font-size: 11px; color: #999;">
+<p>PayPal is located at 2211 N. First St., San Jose, CA 95131.</p>
+</div>
+</div>
+</body>
+</html>
+
+------=_Part_004_PAYPAL--

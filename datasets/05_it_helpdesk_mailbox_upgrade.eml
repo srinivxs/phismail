@@ -1,0 +1,51 @@
+Received: from webmailer.phishkit.xyz (webmailer.phishkit.xyz [194.35.12.99])
+	by mx.bigcorp-inc.com (Postfix) with ESMTP id Q8R9S0T1U2
+	for <rachel.green@bigcorp-inc.com>; Sun, 16 Mar 2026 22:05:18 +0000 (UTC)
+From: "Helpdesk Administrator" <admin@bigcorp-inc.com.webmailer.phishkit.xyz>
+To: rachel.green@bigcorp-inc.com
+Reply-To: helpdesk-admin@mail.ru
+Subject: Mailbox Upgrade Required - Action Required Immediately
+Date: Sun, 16 Mar 2026 22:05:18 +0000
+Message-ID: <helpdesk-005@phishkit.xyz>
+MIME-Version: 1.0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Priority: 1
+Authentication-Results: mx.bigcorp-inc.com;
+	spf=fail (domain bigcorp-inc.com.webmailer.phishkit.xyz does not designate 194.35.12.99 as permitted sender);
+	dkim=none;
+	dmarc=fail action=reject header.from=bigcorp-inc.com.webmailer.phishkit.xyz
+
+<!DOCTYPE html>
+<html>
+<body style="font-family: Calibri, sans-serif; padding: 20px;">
+<div style="border: 1px solid #ddd; padding: 20px; max-width: 550px;">
+<h3>IT Helpdesk - Mailbox Alert</h3>
+<p>Dear rachel.green@bigcorp-inc.com,</p>
+
+<p>Your mailbox has reached its <strong>quota limit</strong> and <strong>4 pending emails</strong> have been placed on <strong>pending status</strong>. In order to receive your incoming mails, you must upgrade your mailbox immediately.</p>
+
+<p>Our database upgrade requires all employees to verify their webmail credentials to maintain access.</p>
+
+<table style="border: 1px solid #ccc; width: 100%; border-collapse: collapse; margin: 15px 0;">
+<tr style="background: #f0f0f0;"><td style="padding: 8px; border: 1px solid #ccc;"><strong>Email:</strong></td><td style="padding: 8px; border: 1px solid #ccc;">rachel.green@bigcorp-inc.com</td></tr>
+<tr><td style="padding: 8px; border: 1px solid #ccc;"><strong>Pending Messages:</strong></td><td style="padding: 8px; border: 1px solid #ccc;">4</td></tr>
+<tr style="background: #f0f0f0;"><td style="padding: 8px; border: 1px solid #ccc;"><strong>Mailbox Status:</strong></td><td style="padding: 8px; border: 1px solid #ccc;"><span style="color: red;">FULL</span></td></tr>
+</table>
+
+<p>Kindly click the link below to login with your webmail information and complete the upgrade:</p>
+
+<p><a href="http://bigcorp-inc.com.webmailer.phishkit.xyz/webmail/upgrade?email=rachel.green@bigcorp-inc.com">Click Here to Upgrade Your Mailbox</a></p>
+
+<p><strong>Important:</strong> Failure to verify your mailbox within 12 hours will result in your email account being <strong>deactivated</strong>.</p>
+
+<p>Thank you,<br>
+Helpdesk Administrator Team<br>
+IT Support Team<br>
+BigCorp Inc.</p>
+
+<hr style="border: none; border-top: 1px solid #eee;">
+<p style="font-size: 10px; color: #999;">This is an automated notification from the mail administrator. Do not ignore this message.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+Received: from idn-phish-server.bulletproof.ua (idn-phish-server.bulletproof.ua [176.119.22.88])
+	by mx.enterprise-mail.com (Postfix) with ESMTP id R8S9T0U1V2
+	for <tom.baker@enterprise-mail.com>; Sun, 09 Mar 2026 08:44:17 +0000 (UTC)
+From: "Apple ID Support" <support@app1e-id-verify.com>
+To: tom.baker@enterprise-mail.com
+Reply-To: apple-id-support@yandex.ru
+Subject: Your Apple ID has been locked for security reasons
+Date: Sun, 09 Mar 2026 08:44:17 +0000
+Message-ID: <homograph-012@bulletproof.ua>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_Part_012_APPLE"
+Authentication-Results: mx.enterprise-mail.com;
+	spf=fail (domain app1e-id-verify.com does not designate 176.119.22.88 as permitted sender);
+	dkim=none;
+	dmarc=fail action=reject header.from=app1e-id-verify.com
+
+------=_Part_012_APPLE
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+Dear Apple Customer,
+
+Your Apple ID (tom.baker@enterprise-mail.com) has been locked due to security concerns.
+
+Someone attempted to sign in to your account from a new device:
+- Device: Windows PC
+- Location: Moscow, Russia
+- Time: March 9, 2026 at 03:22 AM
+
+If this wasn't you, your account may be compromised. Verify your identity immediately to unlock your Apple ID.
+
+Verify your Apple ID:
+http://xn--pple-43d.com/id/verify?apple_id=tom.baker@enterprise-mail.com&session=locked
+
+If you do not verify within 24 hours, your Apple ID will be permanently disabled and all purchases, iCloud data, and subscriptions will be lost.
+
+Apple Support
+One Apple Park Way, Cupertino, CA 95014
+
+------=_Part_012_APPLE
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+<body style="font-family: -apple-system, Helvetica Neue, sans-serif; background: #f5f5f7; padding: 20px;">
+<div style="max-width: 580px; margin: auto; background: white; border-radius: 12px; overflow: hidden;">
+<div style="text-align: center; padding: 30px 20px 15px;">
+<span style="font-size: 40px;">&#63743;</span>
+<h2 style="color: #1d1d1f; margin: 10px 0 0;">Your Apple ID has been locked</h2>
+</div>
+<div style="padding: 0 30px 30px;">
+<p>Dear Apple Customer,</p>
+<p>Your Apple ID (<strong>tom.baker@enterprise-mail.com</strong>) has been <strong>locked</strong> due to security concerns.</p>
+
+<div style="background: #fef3f2; border-radius: 8px; padding: 15px; margin: 15px 0;">
+<p style="margin: 0;"><strong>Suspicious Sign-in Detected:</strong></p>
+<p style="margin: 5px 0;">Device: Windows PC<br>Location: Moscow, Russia<br>Time: March 9, 2026 at 03:22 AM</p>
+</div>
+
+<p>If this wasn't you, your account may be <strong>compromised</strong>. <strong>Verify your identity immediately</strong> to unlock your Apple ID.</p>
+
+<p style="text-align: center; margin: 25px 0;">
+<a href="http://xn--pple-43d.com/id/verify?apple_id=tom.baker@enterprise-mail.com&session=locked" style="background: #0071e3; color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; font-size: 16px;">Verify Apple ID</a>
+</p>
+
+<p style="color: #dc3545;"><strong>Warning:</strong> If you do not verify within 24 hours, your Apple ID will be <strong>permanently disabled</strong> and all purchases, iCloud data, and subscriptions will be lost.</p>
+</div>
+<div style="background: #f5f5f7; padding: 15px; text-align: center; font-size: 11px; color: #86868b;">
+Apple Inc. One Apple Park Way, Cupertino, CA 95014
+</div>
+</div>
+</body>
+</html>
+
+------=_Part_012_APPLE--

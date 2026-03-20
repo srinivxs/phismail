@@ -1,0 +1,65 @@
+Received: from bulk-smtp.spamfarm.cn (bulk-smtp.spamfarm.cn [222.186.34.56])
+	by mx.homeuser.net (Postfix) with ESMTP id V3W4X5Y6Z7
+	for <lisa.wang@homeuser.net>; Sat, 15 Mar 2026 11:47:02 +0000 (UTC)
+From: "DHL Express Delivery" <tracking@dhl-express-delivery-notice.com>
+To: lisa.wang@homeuser.net
+Reply-To: dhl-delivery-support@outlook.com
+Subject: DHL Shipment Notification: Package Delivery Failed - Action Required
+Date: Sat, 15 Mar 2026 11:47:02 +0000
+Message-ID: <dhl-phish-006@spamfarm.cn>
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="----=_Part_006_DHL"
+Authentication-Results: mx.homeuser.net;
+	spf=fail (domain dhl-express-delivery-notice.com does not designate 222.186.34.56 as permitted sender);
+	dkim=none;
+	dmarc=fail action=none header.from=dhl-express-delivery-notice.com
+
+------=_Part_006_DHL
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; background: #fafafa; padding: 0; margin: 0;">
+<div style="max-width: 600px; margin: auto; background: white;">
+<div style="background: #d40511; padding: 15px 20px;">
+<span style="color: white; font-size: 22px; font-weight: bold;">DHL</span>
+<span style="color: #ffcc00; font-size: 14px; margin-left: 10px;">EXPRESS</span>
+</div>
+<div style="padding: 25px;">
+<h2>Delivery Attempt Failed</h2>
+<p>Dear Customer,</p>
+<p>We attempted to deliver your package but were unable to complete the delivery. Your shipment is being held at our distribution center.</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+<tr><td style="padding: 8px; background: #f5f5f5;"><strong>Tracking Number:</strong></td><td style="padding: 8px;">4829-1057-3846</td></tr>
+<tr><td style="padding: 8px; background: #f5f5f5;"><strong>Status:</strong></td><td style="padding: 8px;"><span style="color: #d40511;">Delivery Failed - Address Issue</span></td></tr>
+<tr><td style="padding: 8px; background: #f5f5f5;"><strong>Scheduled Date:</strong></td><td style="padding: 8px;">March 14, 2026</td></tr>
+</table>
+
+<p><strong>Action Required:</strong> Please confirm your delivery address and pay the redelivery fee of $2.99 within 48 hours, or your package will be returned to the sender.</p>
+
+<p style="text-align: center; margin: 25px 0;">
+<a href="http://dhl-express-delivery-notice.com/track/reschedule?id=4829105738&ref=LW&fee=2.99" style="background: #d40511; color: white; padding: 12px 35px; text-decoration: none; font-size: 15px;">Schedule Redelivery</a>
+</p>
+
+<p>Alternatively, download the attached shipping label to collect from your nearest DHL service point.</p>
+
+<p style="font-size: 11px; color: #999;">DHL International GmbH, Charles-de-Gaulle-Str. 20, 53113 Bonn, Germany</p>
+</div>
+</div>
+</body>
+</html>
+
+------=_Part_006_DHL
+Content-Type: application/x-zip-compressed;
+	name="DHL_ShippingLabel_4829105738.zip"
+Content-Disposition: attachment;
+	filename="DHL_ShippingLabel_4829105738.zip"
+Content-Transfer-Encoding: base64
+
+UEsDBBQAAAAIAFakeZipArchiveForPhishingDetectionTestingOnly00000000
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+------=_Part_006_DHL--
