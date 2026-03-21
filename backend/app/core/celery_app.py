@@ -33,14 +33,9 @@ celery_app.conf.update(
     task_default_retry_delay=5,
     task_max_retries=3,
 
-    # Task routing
+    # Task routing — all analysis goes through the monolithic pipeline task
     task_routes={
         "app.workers.pipeline.*": {"queue": "email"},
-        "app.workers.email_worker.*": {"queue": "email"},
-        "app.workers.url_worker.*": {"queue": "url"},
-        "app.workers.enrichment_worker.*": {"queue": "enrichment"},
-        "app.workers.scoring_worker.*": {"queue": "scoring"},
-        "app.workers.report_worker.*": {"queue": "reports"},
     },
 
     # Result expiration (24 hours)
@@ -50,10 +45,5 @@ celery_app.conf.update(
     worker_concurrency=4,
 )
 
-# Explicitly import all task modules so they register with Celery
+# Import task modules so they register with Celery
 import app.workers.pipeline  # noqa: F401
-import app.workers.email_worker  # noqa: F401
-import app.workers.url_worker  # noqa: F401
-import app.workers.enrichment_worker  # noqa: F401
-import app.workers.scoring_worker  # noqa: F401
-import app.workers.report_worker  # noqa: F401

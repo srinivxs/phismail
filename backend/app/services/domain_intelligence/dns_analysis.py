@@ -21,7 +21,7 @@ logger = get_logger(__name__)
 
 # Optional cache import — degrade gracefully when Redis is unavailable
 try:
-    from app.utils.cache import cache as _cache_service  # type: ignore
+    from app.core.cache import cache as _cache_service  # type: ignore
     HAS_CACHE = True
 except Exception:  # pragma: no cover
     HAS_CACHE = False
