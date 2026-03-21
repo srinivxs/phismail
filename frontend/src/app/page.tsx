@@ -3,126 +3,245 @@
 import { useEffect, useState } from "react";
 import { listAnalyses, type AnalysisJob } from "@/lib/api";
 import Link from "next/link";
-import PipelineView from "@/components/PipelineView";
+
+/* ── Analysis module descriptions for learners ─────────────── */
+const MODULES = [
+  {
+    icon: "✉",
+    label: "Email Headers",
+    tech: "SPF · DKIM · DMARC",
+    desc: "Verifies the sender's identity by checking authentication records. Mismatches often mean the email is spoofed.",
+  },
+  {
+    icon: "🔗",
+    label: "URL Analysis",
+    tech: "Obfuscation · Redirect chains",
+    desc: "Inspects every link for deceptive structure, IP addresses instead of domains, and encoding tricks used to hide destinations.",
+  },
+  {
+    icon: "🌐",
+    label: "Domain Intelligence",
+    tech: "WHOIS · DNS · Typosquatting",
+    desc: "Looks up when a domain was registered, who owns it, and whether it visually mimics a trusted brand like PayPal or Google.",
+  },
+  {
+    icon: "🧠",
+    label: "Language Analysis",
+    tech: "NLP · Urgency · Credential bait",
+    desc: "Scans email body for psychological manipulation — urgency phrases, threats, and prompts to enter passwords or bank details.",
+  },
+  {
+    icon: "🛡",
+    label: "Threat Intelligence",
+    tech: "OpenPhish · PhishTank · URLhaus",
+    desc: "Cross-references all URLs against real-time phishing and malware feeds maintained by the security community.",
+  },
+  {
+    icon: "📎",
+    label: "Attachment Safety",
+    tech: "MIME · Macros · Double extensions",
+    desc: "Detects dangerous file types, executable disguised as documents, and Office files containing malicious macros.",
+  },
+];
+
+/* ── Common phishing tactics for learner education ─────────── */
+const TACTICS = [
+  { label: "Urgency pressure", example: '"Your account will be suspended in 24 hours"', color: "#f59e0b" },
+  { label: "Impersonation", example: "paypa1.com · secure-login-microsoft.net", color: "#f43f5e" },
+  { label: "Hidden redirects", example: "bit.ly/xK2p → tracks → evil.ru/steal", color: "#f97316" },
+  { label: "Credential harvest", example: '"Verify your password to continue"', color: "#a78bfa" },
+];
 
 export default function Dashboard() {
   const [analyses, setAnalyses] = useState<AnalysisJob[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    listAnalyses(1, 10).then((data) => {
-      setAnalyses(data.analyses);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    listAnalyses(1, 10)
+      .then((data) => { setAnalyses(data.analyses); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-14">
 
-      {/* ── Hero ── */}
-      <section className="text-center pt-10 pb-2">
-        <div className="inline-flex items-center gap-2 text-xs font-mono px-3 py-1 rounded mb-5"
-          style={{ border: "1px solid var(--color-phismail-border)", color: "var(--color-phismail-text-muted)", background: "var(--color-phismail-surface)" }}
+      {/* ══ HERO ══════════════════════════════════════════════════ */}
+      <section className="text-center pt-10">
+        <div
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 font-mono text-xs"
+          style={{
+            border: "1px solid var(--color-phismail-border)",
+            color: "var(--color-phismail-text-muted)",
+            background: "var(--color-phismail-surface)",
+          }}
         >
-          <span style={{ color: "var(--color-phismail-green)" }}>●</span>
-          SOC Platform v0.1 — Active
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#22c55e" }} />
+          Analysis engine online · 9-stage forensic pipeline
         </div>
 
-        <h1 className="text-4xl font-bold tracking-tight mb-4">
-          <span style={{ color: "var(--color-phismail-purple)" }}>&lt;</span>
-          <span style={{ color: "var(--color-phismail-text)" }}> Phishing Investigation </span>
-          <span style={{ color: "var(--color-phismail-green)" }}>/&gt;</span>
+        <h1
+          className="text-5xl font-bold tracking-tight mb-4 leading-tight"
+          style={{ letterSpacing: "-0.02em" }}
+        >
+          <span style={{ color: "var(--color-phismail-purple)" }}>Spot</span>
+          <span style={{ color: "var(--color-phismail-text)" }}> phishing.</span>
+          <br />
+          <span style={{ color: "var(--color-phismail-text-muted)", fontWeight: 400, fontSize: "0.65em" }}>
+            Understand exactly why it&apos;s dangerous.
+          </span>
         </h1>
 
-        <p className="font-mono text-sm max-w-xl mx-auto" style={{ color: "var(--color-phismail-text-muted)" }}>
-          // SOC-grade analysis engine · deep threat intelligence · 9-stage forensic pipeline
+        <p
+          className="text-base max-w-lg mx-auto mb-10 leading-relaxed"
+          style={{ color: "var(--color-phismail-text-muted)" }}
+        >
+          Drop a suspicious email or paste a URL. PhisMail runs it through nine
+          detection modules and explains every finding in plain English — built
+          for analysts who want to learn, not just get a verdict.
         </p>
+
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
+            href="/submit"
+            className="btn-primary inline-flex items-center gap-2.5 justify-center"
+          >
+            <span style={{ fontFamily: "inherit" }}>📧</span>
+            Analyze suspicious email
+          </Link>
+          <Link
+            href="/submit"
+            className="inline-flex items-center gap-2.5 justify-center px-7 py-3 rounded-lg font-semibold text-sm transition-all duration-200"
+            style={{
+              background: "var(--color-phismail-surface)",
+              border: "1px solid var(--color-phismail-border)",
+              color: "var(--color-phismail-text)",
+              fontFamily: "'JetBrains Mono', monospace",
+            }}
+          >
+            <span>🔗</span>
+            Check a suspicious URL
+          </Link>
+        </div>
       </section>
 
-      {/* ── Quick Actions ── */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Link href="/submit" className="glass-panel p-7 group cursor-pointer block">
-          <div className="flex items-start gap-4">
-            <div
-              className="w-10 h-10 rounded flex items-center justify-center shrink-0 font-mono text-xs font-bold transition-all duration-300 group-hover:scale-110"
-              style={{
-                background: "var(--color-phismail-purple-glow)",
-                border:     "1px solid var(--color-phismail-border)",
-                color:      "var(--color-phismail-purple)",
-              }}
-            >
-              &lt;/&gt;
-            </div>
-            <div className="min-w-0">
-              <h3 className="font-mono font-semibold text-sm mb-1" style={{ color: "var(--color-phismail-text)" }}>
-                upload_email<span style={{ color: "var(--color-phismail-green)" }}>()</span>
-              </h3>
-              <p className="text-xs font-mono" style={{ color: "var(--color-phismail-text-muted)" }}>
-                // Drop .eml file for full forensic analysis
-              </p>
-            </div>
-          </div>
-        </Link>
-
-        <Link href="/submit" className="glass-panel p-7 group cursor-pointer block">
-          <div className="flex items-start gap-4">
-            <div
-              className="w-10 h-10 rounded flex items-center justify-center shrink-0 font-mono text-xs font-bold transition-all duration-300 group-hover:scale-110"
-              style={{
-                background: "var(--color-phismail-purple-glow)",
-                border:     "1px solid var(--color-phismail-border)",
-                color:      "var(--color-phismail-purple)",
-              }}
-            >
-              URL
-            </div>
-            <div className="min-w-0">
-              <h3 className="font-mono font-semibold text-sm mb-1" style={{ color: "var(--color-phismail-text)" }}>
-                analyze_url<span style={{ color: "var(--color-phismail-green)" }}>()</span>
-              </h3>
-              <p className="text-xs font-mono" style={{ color: "var(--color-phismail-text-muted)" }}>
-                // Paste suspicious link for deep threat intelligence
-              </p>
-            </div>
-          </div>
-        </Link>
-      </section>
-
-      {/* ── Pipeline Architecture ── */}
-      <PipelineView />
-
-      {/* ── Recent Analyses ── */}
+      {/* ══ COMMON PHISHING TACTICS ═══════════════════════════════ */}
       <section>
-        <div className="flex items-center gap-3 mb-4">
-          <span className="font-mono text-sm font-bold" style={{ color: "var(--color-phismail-purple)" }}>&lt;</span>
-          <h2 className="font-mono text-sm font-bold" style={{ color: "var(--color-phismail-text)" }}>recent_analyses</h2>
-          <span className="font-mono text-sm font-bold" style={{ color: "var(--color-phismail-green)" }}>/&gt;</span>
+        <div className="flex items-baseline gap-3 mb-5">
+          <h2 className="text-lg font-bold" style={{ color: "var(--color-phismail-text)" }}>
+            Common phishing tactics
+          </h2>
+          <span className="text-sm" style={{ color: "var(--color-phismail-text-muted)" }}>
+            — what attackers rely on
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {TACTICS.map((t) => (
+            <div
+              key={t.label}
+              className="rounded-xl p-4"
+              style={{
+                background: "var(--color-phismail-surface)",
+                border: `1px solid ${t.color}28`,
+                borderLeft: `3px solid ${t.color}`,
+              }}
+            >
+              <p className="font-semibold text-sm mb-1.5" style={{ color: t.color }}>
+                {t.label}
+              </p>
+              <p
+                className="text-xs leading-relaxed font-mono"
+                style={{ color: "var(--color-phismail-text-muted)" }}
+              >
+                {t.example}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══ WHAT WE ANALYZE ═══════════════════════════════════════ */}
+      <section>
+        <div className="flex items-baseline gap-3 mb-5">
+          <h2 className="text-lg font-bold" style={{ color: "var(--color-phismail-text)" }}>
+            What we analyze
+          </h2>
+          <span className="text-sm" style={{ color: "var(--color-phismail-text-muted)" }}>
+            — 9 detection modules, ~80 features
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {MODULES.map((m) => (
+            <div key={m.label} className="module-card">
+              <div className="flex items-start gap-3 mb-3">
+                <span className="text-2xl leading-none">{m.icon}</span>
+                <div>
+                  <h3 className="font-semibold text-sm" style={{ color: "var(--color-phismail-text)" }}>
+                    {m.label}
+                  </h3>
+                  <p
+                    className="text-[11px] font-mono mt-0.5"
+                    style={{ color: "var(--color-phismail-purple)" }}
+                  >
+                    {m.tech}
+                  </p>
+                </div>
+              </div>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--color-phismail-text-muted)" }}>
+                {m.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══ RECENT ANALYSES ═══════════════════════════════════════ */}
+      <section>
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-lg font-bold" style={{ color: "var(--color-phismail-text)" }}>
+            Recent analyses
+          </h2>
+          <Link
+            href="/submit"
+            className="text-xs font-mono font-semibold transition-colors"
+            style={{ color: "var(--color-phismail-purple)" }}
+          >
+            + New analysis
+          </Link>
         </div>
 
         <div className="glass-panel-static overflow-hidden">
           {loading ? (
             <div className="p-8 space-y-3">
-              {[1,2,3].map(i => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="h-12 loading-shimmer rounded" />
               ))}
             </div>
           ) : analyses.length === 0 ? (
-            <div className="p-12 text-center">
-              <p className="font-mono text-sm mb-1" style={{ color: "var(--color-phismail-text-muted)" }}>
-                $ <span style={{ color: "var(--color-phismail-green)" }}>no analyses found</span>
+            <div className="p-12 text-center space-y-3">
+              <p className="text-3xl">🔍</p>
+              <p className="font-semibold" style={{ color: "var(--color-phismail-text)" }}>
+                No analyses yet
               </p>
-              <p className="font-mono text-xs" style={{ color: "var(--color-phismail-text-dim)" }}>
-                // submit an email or URL to get started
+              <p className="text-sm" style={{ color: "var(--color-phismail-text-muted)" }}>
+                Submit your first suspicious email or URL to get started.
               </p>
+              <Link href="/submit">
+                <span className="btn-primary inline-block mt-2 text-xs px-5 py-2">
+                  Start analyzing
+                </span>
+              </Link>
             </div>
           ) : (
             <table className="soc-table">
               <thead>
                 <tr>
-                  <th>analysis_id</th>
-                  <th>type</th>
-                  <th>status</th>
-                  <th>submitted</th>
+                  <th>ID</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Submitted</th>
                 </tr>
               </thead>
               <tbody>
@@ -141,11 +260,14 @@ export default function Dashboard() {
                       <span className="badge badge-low">{a.artifact_type}</span>
                     </td>
                     <td>
-                      <span className={`badge ${
-                        a.status === 'complete'   ? 'badge-low'      :
-                        a.status === 'processing' ? 'badge-medium'   :
-                        a.status === 'failed'     ? 'badge-critical' : 'badge-high'
-                      }`}>
+                      <span
+                        className={`badge ${
+                          a.status === "complete"   ? "badge-low"
+                          : a.status === "processing" ? "badge-medium"
+                          : a.status === "failed"     ? "badge-critical"
+                          : "badge-high"
+                        }`}
+                      >
                         {a.status}
                       </span>
                     </td>

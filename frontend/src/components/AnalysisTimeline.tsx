@@ -2,19 +2,39 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const STAGES = [
+const EMAIL_STAGES = [
   { label: "email_parsing",       desc: "MIME decomposition · header extraction",              ms: 900  },
   { label: "header_analysis",     desc: "SPF · DKIM · DMARC · relay hop tracing",              ms: 1100 },
-  { label: "url_scanning",        desc: "URL fingerprinting · obfuscation detection",          ms: 1400 },
-  { label: "domain_intelligence", desc: "WHOIS · DNS enumeration · typosquat scoring",         ms: 2400 },
-  { label: "threat_intel",        desc: "OpenPhish · PhishTank · URLhaus correlation",         ms: 2200 },
-  { label: "nlp_analysis",        desc: "Social engineering language pattern detection",       ms: 800  },
+  { label: "url_scanning",        desc: "URL structural analysis · obfuscation detection",     ms: 1400 },
+  { label: "domain_intelligence", desc: "WHOIS · DNS enumeration · homograph detection",      ms: 2400 },
+  { label: "nlp_analysis",        desc: "Urgency · credential · financial keyword scoring",    ms: 800  },
+  { label: "attachment_analysis", desc: "RTLO · double extension · MIME mismatch · macro detection", ms: 600 },
+  { label: "threat_intel",        desc: "OpenPhish · PhishTank · URLhaus feed correlation",    ms: 2200 },
+  { label: "redirect_tracing",   desc: "HTTP redirect chain · hop analysis",                  ms: 1200 },
+  { label: "ip_reputation",      desc: "AbuseIPDB · country risk · Tor exit node check",      ms: 1000 },
   { label: "feature_engineering", desc: "80-feature adversarial vector assembly",              ms: 600  },
   { label: "risk_scoring",        desc: "Dual-bucket suspicion / trust engine",                ms: 0    },
   { label: "report_generation",   desc: "IOC report · STIX2 · SIEM export",                   ms: 600  },
 ];
 
-const HOLD_AT = 7;
+const URL_STAGES = [
+  { label: "url_scanning",        desc: "URL structural analysis · obfuscation detection",     ms: 1200 },
+  { label: "domain_intelligence", desc: "WHOIS · DNS enumeration · homograph detection",      ms: 2400 },
+  { label: "threat_intel",        desc: "OpenPhish · PhishTank · URLhaus feed correlation",    ms: 2200 },
+  { label: "redirect_tracing",   desc: "HTTP redirect chain · hop analysis",                  ms: 1400 },
+  { label: "feature_engineering", desc: "Feature vector assembly",                             ms: 600  },
+  { label: "risk_scoring",        desc: "Dual-bucket suspicion / trust engine",                ms: 0    },
+  { label: "report_generation",   desc: "IOC report · STIX2 · SIEM export",                   ms: 600  },
+];
+
+function getStages(artifactType?: string) {
+  return artifactType === "url" ? URL_STAGES : EMAIL_STAGES;
+}
+
+function getHoldAt(artifactType?: string) {
+  const stages = getStages(artifactType);
+  return stages.length - 2; // hold at risk_scoring (second to last)
+}
 type StageStatus = "done" | "running" | "pending" | "failed";
 
 interface Props {
@@ -34,6 +54,9 @@ function Dots() {
 }
 
 export default function AnalysisTimeline({ status, analysisId, artifactType }: Props) {
+  const STAGES  = getStages(artifactType);
+  const HOLD_AT = getHoldAt(artifactType);
+
   const [active, setActive]   = useState(0);
   const [times, setTimes]     = useState<Record<number, number>>({});
   const [allDone, setAllDone] = useState(false);
@@ -41,6 +64,8 @@ export default function AnalysisTimeline({ status, analysisId, artifactType }: P
 
   const timerRef   = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stageStart = useRef(Date.now());
+  const stagesRef  = useRef(STAGES);
+  const holdAtRef  = useRef(HOLD_AT);
 
   /* elapsed counter */
   useEffect(() => {
@@ -50,37 +75,41 @@ export default function AnalysisTimeline({ status, analysisId, artifactType }: P
 
   /* stage ticker */
   useEffect(() => {
+    const stages = stagesRef.current;
+    const holdAt = holdAtRef.current;
     if (status === "failed" || allDone) return;
     const advance = () => {
       setActive(prev => {
         const t = Date.now() - stageStart.current;
         setTimes(m => ({ ...m, [prev]: t }));
         stageStart.current = Date.now();
-        if (prev === HOLD_AT && status !== "complete") return prev;
+        if (prev === holdAt && status !== "complete") return prev;
         const next = prev + 1;
-        if (next >= STAGES.length) { setAllDone(true); return prev; }
-        if (STAGES[next].ms > 0) timerRef.current = setTimeout(advance, STAGES[next].ms);
+        if (next >= stages.length) { setAllDone(true); return prev; }
+        if (stages[next].ms > 0) timerRef.current = setTimeout(advance, stages[next].ms);
         return next;
       });
     };
-    if (STAGES[active].ms > 0 && active < HOLD_AT)
-      timerRef.current = setTimeout(advance, STAGES[active].ms);
+    if (stages[active].ms > 0 && active < holdAt)
+      timerRef.current = setTimeout(advance, stages[active].ms);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* flush when backend complete */
   useEffect(() => {
-    if (status === "complete" && active >= HOLD_AT && !allDone) {
-      setTimes(m => ({ ...m, [HOLD_AT]: Date.now() - stageStart.current }));
+    const stages = stagesRef.current;
+    const holdAt = holdAtRef.current;
+    if (status === "complete" && active >= holdAt && !allDone) {
+      setTimes(m => ({ ...m, [holdAt]: Date.now() - stageStart.current }));
       stageStart.current = Date.now();
-      setActive(HOLD_AT + 1);
+      setActive(holdAt + 1);
       timerRef.current = setTimeout(() => {
-        setTimes(m => ({ ...m, [HOLD_AT + 1]: Date.now() - stageStart.current }));
+        setTimes(m => ({ ...m, [holdAt + 1]: Date.now() - stageStart.current }));
         setAllDone(true);
-      }, STAGES[HOLD_AT + 1].ms);
+      }, stages[holdAt + 1].ms);
     }
-    if (status === "complete" && active < HOLD_AT) setTimeout(() => setAllDone(true), 400);
+    if (status === "complete" && active < holdAt) setTimeout(() => setAllDone(true), 400);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 

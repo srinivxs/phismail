@@ -14,9 +14,9 @@ export default function Footer() {
           {/* Identity block */}
           <div className="space-y-2 max-w-md">
             <div className="flex items-center gap-1.5">
-              <span className="font-mono text-base font-bold" style={{ color: "var(--color-phismail-purple)" }}>&lt;</span>
+              <span className="font-mono text-base font-bold" style={{ color: "var(--color-phismail-purple)" }}>[</span>
               <span className="font-mono text-base font-bold" style={{ color: "var(--color-phismail-text)" }}>Srinivas V B</span>
-              <span className="font-mono text-base font-bold" style={{ color: "var(--color-phismail-green)" }}>/&gt;</span>
+              <span className="font-mono text-base font-bold" style={{ color: "var(--color-phismail-green)" }}>]</span>
             </div>
             <p className="text-xs leading-relaxed" style={{ color: "var(--color-phismail-text-muted)" }}>
               Security engineer and developer building phishing detection systems,

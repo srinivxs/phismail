@@ -41,11 +41,11 @@ export default function NetworkBackground() {
     let streams: Stream[] = [];
 
     const isLight = theme === "light";
-    // Light mode: very subtle dark-on-light; dark mode: neon green
-    const headColor  = isLight ? "rgba(0,80,208,0.55)"  : "rgba(0,255,157,0.90)";
-    const midColor   = isLight ? "rgba(0,80,208,0.22)"  : "rgba(0,255,157,0.45)";
-    const tailColor  = isLight ? "rgba(0,80,208,0.08)"  : "rgba(0,255,157,0.15)";
-    const bgFade     = isLight ? "rgba(240,242,245,0.15)" : "rgba(13,17,23,0.12)";
+    // Light mode: very subtle blue; dark mode: amber investigation accent
+    const headColor  = isLight ? "rgba(8,145,178,0.55)"  : "rgba(245,158,11,0.85)";
+    const midColor   = isLight ? "rgba(8,145,178,0.22)"  : "rgba(245,158,11,0.38)";
+    const tailColor  = isLight ? "rgba(8,145,178,0.08)"  : "rgba(245,158,11,0.12)";
+    const bgFade     = isLight ? "rgba(247,248,252,0.15)" : "rgba(9,14,26,0.12)";
 
     const init = () => {
       W = canvas.width  = window.innerWidth;
@@ -118,8 +118,8 @@ export default function NetworkBackground() {
             const alpha = (1 - j / s.length);
             if (alpha <= 0) continue;
             ctx.fillStyle = isLight
-              ? `rgba(0,80,208,${(alpha * 0.06).toFixed(3)})`
-              : `rgba(0,255,157,${(alpha * 0.12).toFixed(3)})`;
+              ? `rgba(8,145,178,${(alpha * 0.06).toFixed(3)})`
+              : `rgba(245,158,11,${(alpha * 0.10).toFixed(3)})`;
           }
 
           const char = s.chars[j] ?? randChar();
@@ -128,7 +128,7 @@ export default function NetworkBackground() {
 
         // Extra bright glow on the leading char (dark mode only)
         if (!isLight && s.y >= 0 && s.y <= H) {
-          ctx.fillStyle = "rgba(180,255,230,0.85)";
+          ctx.fillStyle = "rgba(255,222,120,0.90)";
           ctx.fillText(s.chars[0], s.x, s.y);
         }
       }

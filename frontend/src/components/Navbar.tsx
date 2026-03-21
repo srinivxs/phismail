@@ -73,15 +73,12 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-6">
 
-        {/* ── Logo: <PhisMail/> bracket style ── */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-          <span
-            className="text-base font-bold tracking-tight"
-            style={{ letterSpacing: "-0.01em" }}
-          >
-            <span style={{ color: "var(--color-phismail-purple)" }}>&lt;</span>
-            <span style={{ color: "var(--color-phismail-text)" }}>Phismail</span>
-            <span style={{ color: "var(--color-phismail-green)" }}>/&gt;</span>
+        {/* ── Logo ── */}
+        <Link href="/" className="flex items-center gap-2.5 shrink-0">
+          <span className="text-base font-bold tracking-tight font-mono" style={{ letterSpacing: "-0.01em" }}>
+            <span style={{ color: "var(--color-phismail-purple)" }}>[</span>
+            <span style={{ color: "var(--color-phismail-text)" }}>PhisMail</span>
+            <span style={{ color: "var(--color-phismail-green)" }}>]</span>
           </span>
           <span
             className="hidden sm:inline-flex text-[10px] px-1.5 py-0.5 rounded font-mono"
@@ -105,14 +102,14 @@ export default function Navbar() {
                 href={href}
                 className="relative px-4 py-1.5 rounded text-sm font-mono font-medium transition-all duration-200"
                 style={{
-                  color:      active ? "var(--color-phismail-green)"  : "var(--color-phismail-text-muted)",
-                  background: active ? "var(--color-phismail-green-glow)" : "transparent",
-                  border:     active ? "1px solid var(--color-phismail-border-hover)" : "1px solid transparent",
+                  color:      active ? "var(--color-phismail-purple)" : "var(--color-phismail-text-muted)",
+                  background: active ? "var(--color-phismail-purple-glow)" : "transparent",
+                  border:     active ? "1px solid var(--color-phismail-border)" : "1px solid transparent",
                 }}
               >
                 {active && (
-                  <span style={{ color: "var(--color-phismail-purple)" }}>./</span>
-                )}
+                  <span style={{ color: "var(--color-phismail-green)" }}>›</span>
+                )}{" "}
                 {label}
               </Link>
             );

@@ -1,80 +1,79 @@
 @import "tailwindcss";
 
 /* =============================================================================
-   STATIC TOKENS — severity & verdict colours never change between themes
+   STATIC TOKENS — severity & verdict colours, never change between themes
 ============================================================================= */
 @theme inline {
-  --color-severity-critical: #f85149;
-  --color-severity-high:     #ff8c42;
-  --color-severity-medium:   #e3b341;
-  --color-severity-low:      #3fb950;
-  --color-verdict-safe:      #3fb950;
-  --color-verdict-suspicious: #e3b341;
-  --color-verdict-phishing:  #f85149;
+  --color-severity-critical: #f43f5e;
+  --color-severity-high:     #f97316;
+  --color-severity-medium:   #eab308;
+  --color-severity-low:      #22c55e;
+  --color-verdict-safe:      #22c55e;
+  --color-verdict-suspicious: #eab308;
+  --color-verdict-phishing:  #f43f5e;
 }
 
 /* =============================================================================
-   DARK THEME  — "Matrix SOC"
-   Deep black canvas · neon blue primary · neon green secondary
+   DARK THEME — "Analyst Workbench"
+   Deep navy canvas · amber investigation accent · cyan data accent
 ============================================================================= */
 :root {
   color-scheme: dark;
 
-  --color-phismail-bg:            #0d1117;
-  --color-phismail-surface:       #161b22;
-  --color-phismail-panel:         rgba(22, 27, 34, 0.85);
-  --color-phismail-border:        rgba(0, 112, 243, 0.30);
-  --color-phismail-border-active: rgba(0, 255, 157, 0.50);
-  --color-phismail-border-hover:  rgba(0, 255, 157, 0.30);
+  --color-phismail-bg:            #090e1a;
+  --color-phismail-surface:       #0f1629;
+  --color-phismail-panel:         rgba(15, 22, 41, 0.88);
+  --color-phismail-border:        rgba(245, 158, 11, 0.18);
+  --color-phismail-border-active: rgba(34, 211, 238, 0.50);
+  --color-phismail-border-hover:  rgba(34, 211, 238, 0.28);
 
-  --color-phismail-purple:        #0070f3;   /* neon blue — primary accent  */
-  --color-phismail-purple-light:  #3b9eff;   /* lighter blue                */
-  --color-phismail-purple-dark:   #0050d0;   /* pressed/dim blue            */
-  --color-phismail-purple-glow:   rgba(0, 112, 243, 0.12);
+  --color-phismail-purple:        #f59e0b;   /* amber — primary/investigation accent */
+  --color-phismail-purple-light:  #fbbf24;
+  --color-phismail-purple-dark:   #d97706;
+  --color-phismail-purple-glow:   rgba(245, 158, 11, 0.10);
 
-  --color-phismail-green:         #00ff9d;   /* neon green — secondary      */
-  --color-phismail-green-glow:    rgba(0, 255, 157, 0.10);
+  --color-phismail-green:         #22d3ee;   /* cyan — technical/data accent */
+  --color-phismail-green-glow:    rgba(34, 211, 238, 0.08);
 
-  --color-phismail-text:          #e6edf3;
-  --color-phismail-text-muted:    #8b949e;
-  --color-phismail-text-dim:      #30363d;
+  --color-phismail-text:          #f1f5f9;
+  --color-phismail-text-muted:    #94a3b8;
+  --color-phismail-text-dim:      #1e293b;
 
-  --color-phismail-nav-bg:        rgba(13, 17, 23, 0.96);
-  --color-phismail-grid-line:     rgba(0, 112, 243, 0.04);
-  --color-phismail-scrollbar:     #0070f3;
-  --color-phismail-input-bg:      rgba(22, 27, 34, 0.80);
+  --color-phismail-nav-bg:        rgba(9, 14, 26, 0.96);
+  --color-phismail-grid-line:     rgba(245, 158, 11, 0.03);
+  --color-phismail-scrollbar:     #f59e0b;
+  --color-phismail-input-bg:      rgba(15, 22, 41, 0.80);
 }
 
 /* =============================================================================
-   LIGHT THEME  — "Analyst Light"
-   Crisp slate canvas · deep blue accent
+   LIGHT THEME — "Analyst Light"
 ============================================================================= */
 [data-theme="light"] {
   color-scheme: light;
 
-  --color-phismail-bg:            #f0f2f5;
+  --color-phismail-bg:            #f7f8fc;
   --color-phismail-surface:       #ffffff;
   --color-phismail-panel:         rgba(255, 255, 255, 0.95);
-  --color-phismail-border:        rgba(0, 80, 208, 0.15);
-  --color-phismail-border-active: rgba(0, 112, 243, 0.40);
-  --color-phismail-border-hover:  rgba(0, 112, 243, 0.25);
+  --color-phismail-border:        rgba(180, 120, 0, 0.14);
+  --color-phismail-border-active: rgba(8, 145, 178, 0.40);
+  --color-phismail-border-hover:  rgba(8, 145, 178, 0.25);
 
-  --color-phismail-purple:        #0050d0;
-  --color-phismail-purple-light:  #0070f3;
-  --color-phismail-purple-dark:   #003a9e;
-  --color-phismail-purple-glow:   rgba(0, 80, 208, 0.08);
+  --color-phismail-purple:        #b45309;
+  --color-phismail-purple-light:  #d97706;
+  --color-phismail-purple-dark:   #92400e;
+  --color-phismail-purple-glow:   rgba(180, 83, 9, 0.07);
 
-  --color-phismail-green:         #00875a;
-  --color-phismail-green-glow:    rgba(0, 135, 90, 0.08);
+  --color-phismail-green:         #0891b2;
+  --color-phismail-green-glow:    rgba(8, 145, 178, 0.07);
 
-  --color-phismail-text:          #0d1117;
-  --color-phismail-text-muted:    #57606a;
-  --color-phismail-text-dim:      #afb8c1;
+  --color-phismail-text:          #0f172a;
+  --color-phismail-text-muted:    #475569;
+  --color-phismail-text-dim:      #cbd5e1;
 
   --color-phismail-nav-bg:        rgba(255, 255, 255, 0.96);
-  --color-phismail-grid-line:     rgba(0, 80, 208, 0.04);
-  --color-phismail-scrollbar:     #0070f3;
-  --color-phismail-input-bg:      rgba(240, 242, 245, 0.90);
+  --color-phismail-grid-line:     rgba(180, 83, 9, 0.03);
+  --color-phismail-scrollbar:     #d97706;
+  --color-phismail-input-bg:      rgba(247, 248, 252, 0.90);
 }
 
 /* =============================================================================
@@ -93,14 +92,10 @@ html {
 body {
   background-color: var(--color-phismail-bg);
   color: var(--color-phismail-text);
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  /* Inter for readable body text; monospace for code/technical elements */
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   transition: background-color 0.25s ease, color 0.25s ease;
-}
-
-/* Light mode — subtle grid */
-[data-theme="light"] body {
-  background-image: none;
 }
 
 /* =============================================================================
@@ -123,10 +118,9 @@ body {
   border-color: var(--color-phismail-border-active);
   box-shadow:
     0 0 20px var(--color-phismail-green-glow),
-    0 0 40px rgba(0, 255, 157, 0.05);
+    0 0 40px rgba(34, 211, 238, 0.04);
 }
 
-/* Panel without hover glow (tables, data grids) */
 .glass-panel-static {
   background: var(--color-phismail-panel);
   backdrop-filter: blur(16px);
@@ -138,32 +132,63 @@ body {
 }
 
 /* =============================================================================
+   EDUCATIONAL CALLOUT — human-readable explanation panels
+============================================================================= */
+.edu-callout {
+  background: rgba(34, 211, 238, 0.04);
+  border: 1px solid rgba(34, 211, 238, 0.15);
+  border-left: 3px solid var(--color-phismail-green);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-phismail-text-muted);
+}
+
+.edu-callout-warn {
+  background: rgba(245, 158, 11, 0.05);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+  border-left: 3px solid var(--color-phismail-purple);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-phismail-text-muted);
+}
+
+/* =============================================================================
    NEON GLOW UTILITIES
 ============================================================================= */
-.neon-text-blue {
+.neon-text-amber {
   color: var(--color-phismail-purple);
   text-shadow:
-    0 0 10px rgba(0, 112, 243, 0.8),
-    0 0 20px rgba(0, 112, 243, 0.4);
+    0 0 10px rgba(245, 158, 11, 0.8),
+    0 0 20px rgba(245, 158, 11, 0.4);
 }
 
-.neon-text-green {
+.neon-text-cyan {
   color: var(--color-phismail-green);
   text-shadow:
-    0 0 10px rgba(0, 255, 157, 0.8),
-    0 0 20px rgba(0, 255, 157, 0.4);
+    0 0 10px rgba(34, 211, 238, 0.8),
+    0 0 20px rgba(34, 211, 238, 0.4);
 }
 
-/* Code bracket section header: < Title /> */
+/* Legacy aliases */
+.neon-text-blue  { color: var(--color-phismail-purple); }
+.neon-text-green { color: var(--color-phismail-green); }
+
+/* Code bracket section header */
 .bracket-header::before {
-  content: '< ';
+  content: '[ ';
   color: var(--color-phismail-purple);
+  font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
 }
 
 .bracket-header::after {
-  content: ' />';
+  content: ' ]';
   color: var(--color-phismail-green);
+  font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
 }
 
@@ -172,28 +197,28 @@ body {
 ============================================================================= */
 .btn-primary {
   background: var(--color-phismail-purple);
-  color: #ffffff;
+  color: #000000;
   padding: 11px 28px;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.875rem;
-  letter-spacing: 0.03em;
-  border: 1px solid rgba(0, 112, 243, 0.6);
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(245, 158, 11, 0.6);
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
-  font-family: inherit;
-  box-shadow: 0 0 12px rgba(0, 112, 243, 0.35);
+  font-family: 'JetBrains Mono', monospace;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.30);
 }
 
 .btn-primary:hover {
   background: var(--color-phismail-purple-light);
   box-shadow:
-    0 0 20px rgba(0, 112, 243, 0.6),
-    0 0 40px rgba(0, 112, 243, 0.2);
+    0 0 24px rgba(245, 158, 11, 0.55),
+    0 0 48px rgba(245, 158, 11, 0.18);
   transform: translateY(-1px);
-  border-color: rgba(0, 112, 243, 0.9);
+  border-color: rgba(245, 158, 11, 0.9);
 }
 
 .btn-primary:active {
@@ -201,7 +226,7 @@ body {
 }
 
 .btn-primary:disabled {
-  opacity: 0.45;
+  opacity: 0.40;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -220,31 +245,31 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.07em;
   white-space: nowrap;
-  font-family: inherit;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .badge-critical {
-  background: rgba(248, 81, 73, 0.12);
+  background: rgba(244, 63, 94, 0.12);
   color: var(--color-severity-critical);
-  border: 1px solid rgba(248, 81, 73, 0.35);
+  border: 1px solid rgba(244, 63, 94, 0.35);
 }
 
 .badge-high {
-  background: rgba(255, 140, 66, 0.12);
+  background: rgba(249, 115, 22, 0.12);
   color: var(--color-severity-high);
-  border: 1px solid rgba(255, 140, 66, 0.35);
+  border: 1px solid rgba(249, 115, 22, 0.35);
 }
 
 .badge-medium {
-  background: rgba(227, 179, 65, 0.10);
+  background: rgba(234, 179, 8, 0.10);
   color: var(--color-severity-medium);
-  border: 1px solid rgba(227, 179, 65, 0.30);
+  border: 1px solid rgba(234, 179, 8, 0.30);
 }
 
 .badge-low {
-  background: rgba(63, 185, 80, 0.10);
+  background: rgba(34, 197, 94, 0.10);
   color: var(--color-severity-low);
-  border: 1px solid rgba(63, 185, 80, 0.30);
+  border: 1px solid rgba(34, 197, 94, 0.30);
 }
 
 /* =============================================================================
@@ -255,7 +280,7 @@ body {
 .verdict-phishing   { color: var(--color-verdict-phishing); }
 
 /* =============================================================================
-   FORM INPUTS — terminal style
+   FORM INPUTS
 ============================================================================= */
 .soc-input {
   width: 100%;
@@ -265,26 +290,27 @@ body {
   padding: 11px 14px;
   color: var(--color-phismail-text);
   font-size: 0.875rem;
-  font-family: inherit;
+  font-family: 'JetBrains Mono', monospace;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.25s ease;
 }
 
 .soc-input::placeholder {
-  color: var(--color-phismail-text-dim);
+  color: var(--color-phismail-text-muted);
+  opacity: 0.6;
 }
 
 .soc-input:focus {
   border-color: var(--color-phismail-purple);
-  box-shadow: 0 0 0 3px var(--color-phismail-purple-glow), 0 0 12px rgba(0, 112, 243, 0.2);
+  box-shadow: 0 0 0 3px var(--color-phismail-purple-glow), 0 0 12px rgba(245, 158, 11, 0.18);
 }
 
 /* =============================================================================
    DROP ZONE
 ============================================================================= */
 .drop-zone {
-  border: 1px dashed var(--color-phismail-border);
-  border-radius: 10px;
+  border: 2px dashed var(--color-phismail-border);
+  border-radius: 12px;
   padding: 48px 32px;
   text-align: center;
   cursor: pointer;
@@ -293,9 +319,9 @@ body {
 
 .drop-zone:hover,
 .drop-zone.active {
-  border-color: var(--color-phismail-green);
-  background: var(--color-phismail-green-glow);
-  box-shadow: 0 0 20px rgba(0, 255, 157, 0.08);
+  border-color: var(--color-phismail-purple);
+  background: var(--color-phismail-purple-glow);
+  box-shadow: 0 0 24px rgba(245, 158, 11, 0.08);
 }
 
 /* =============================================================================
@@ -331,7 +357,7 @@ body {
 }
 
 /* =============================================================================
-   ENTRANCE ANIMATION
+   ENTRANCE ANIMATIONS
 ============================================================================= */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(12px); }
@@ -342,8 +368,13 @@ body {
   animation: fadeInUp 0.45s ease-out both;
 }
 
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* =============================================================================
-   MATRIX SCAN ANIMATIONS
+   SCAN ANIMATIONS
 ============================================================================= */
 @keyframes sonarPing {
   0%   { transform: scale(0.6); opacity: 0.7; }
@@ -361,10 +392,16 @@ body {
   50%       { opacity: 0; }
 }
 
+@keyframes amberPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+  50%       { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+}
+
 .terminal-cursor::after {
   content: '_';
   animation: terminalBlink 1s step-end infinite;
   color: var(--color-phismail-green);
+  font-family: 'JetBrains Mono', monospace;
 }
 
 /* =============================================================================
@@ -378,14 +415,14 @@ body {
 }
 
 /* =============================================================================
-   NAV TRANSITION
+   NAV
 ============================================================================= */
 nav {
   transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 /* =============================================================================
-   STAT CARD ACCENT LINES
+   STAT CARD
 ============================================================================= */
 .stat-card-accent {
   border-top: 2px solid var(--color-phismail-purple);
@@ -411,6 +448,7 @@ nav {
   letter-spacing: 0.08em;
   color: var(--color-phismail-text-muted);
   padding: 10px 20px;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .soc-table tbody tr {
@@ -429,4 +467,50 @@ nav {
 .soc-table tbody td {
   padding: 13px 20px;
   font-size: 0.875rem;
+}
+
+/* =============================================================================
+   EVIDENCE ITEM — indicator card with side accent bar
+============================================================================= */
+.evidence-item {
+  display: flex;
+  gap: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--color-phismail-border);
+  background: var(--color-phismail-panel);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.evidence-item:hover {
+  border-color: var(--color-phismail-border-hover);
+  box-shadow: 0 2px 16px rgba(34, 211, 238, 0.06);
+}
+
+.evidence-item-bar {
+  width: 4px;
+  flex-shrink: 0;
+}
+
+.evidence-item-content {
+  flex: 1;
+  padding: 14px 16px;
+  min-width: 0;
+}
+
+/* =============================================================================
+   MODULE CARD — for educational "what we analyze" grid
+============================================================================= */
+.module-card {
+  background: var(--color-phismail-panel);
+  border: 1px solid var(--color-phismail-border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.module-card:hover {
+  border-color: var(--color-phismail-border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(34, 211, 238, 0.06);
 }
