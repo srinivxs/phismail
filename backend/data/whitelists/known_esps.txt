@@ -1,0 +1,8 @@
+sendgrid.net
+mailgun.org
+mailchimp.com
+amazonses.com
+sparkpost.com
+mandrill.com
+postmarkapp.com
+sendinblue.com

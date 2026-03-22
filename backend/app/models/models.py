@@ -82,6 +82,7 @@ class AnalysisJob(Base):
     threat_hits = relationship("ThreatIntelHit", back_populates="analysis_job")
     feature_vectors = relationship("FeatureVector", back_populates="analysis_job")
     report = relationship("InvestigationReport", back_populates="analysis_job", uselist=False)
+    ml_predictions = relationship("MLPrediction", back_populates="analysis_job")
 
     __table_args__ = (
         Index("ix_artifact_hash_status", "artifact_hash", "status"),
@@ -325,5 +326,91 @@ class MLModel(Base):
     feature_count = Column(Integer, nullable=True)
     is_active = Column(Boolean, default=False)
     metadata_json = Column(JSON, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+# =============================================================================
+# ML Prediction
+# =============================================================================
+
+class MLPrediction(Base):
+    """ML model predictions for each analysis."""
+    __tablename__ = "ml_predictions"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    analysis_id = Column(String(36), ForeignKey("analysis_jobs.id", ondelete="CASCADE"), nullable=False)
+
+    prediction = Column(String(20), nullable=False)  # SAFE, SUSPICIOUS, PHISHING
+    confidence = Column(Float, nullable=False)
+    phishing_probability = Column(Float, nullable=False)
+    legitimate_probability = Column(Float, nullable=False)
+    model_version = Column(String(50), nullable=True)
+    reasoning = Column(Text, nullable=True)
+    stage = Column(String(50), nullable=True)  # whitelist, blacklist, auth_rules, ml_ensemble
+    features_json = Column(JSON, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    analysis_job = relationship("AnalysisJob", back_populates="ml_predictions")
+    feedback = relationship("MLFeedback", back_populates="prediction", uselist=False)
+
+    __table_args__ = (
+        Index("ix_ml_predictions_analysis", "analysis_id"),
+    )
+
+
+# =============================================================================
+# ML Feedback
+# =============================================================================
+
+class MLFeedback(Base):
+    """User feedback on ML predictions for continuous improvement."""
+    __tablename__ = "ml_feedback"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    prediction_id = Column(String(36), ForeignKey("ml_predictions.id"), nullable=False)
+
+    user_label = Column(String(20), nullable=False)  # PHISHING or LEGITIMATE
+    was_correct = Column(Boolean, nullable=True)
+    feedback_notes = Column(Text, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    prediction = relationship("MLPrediction", back_populates="feedback")
+
+
+# =============================================================================
+# Domain Whitelist
+# =============================================================================
+
+class DomainWhitelist(Base):
+    """Trusted domains (manual or auto-learned from feedback)."""
+    __tablename__ = "domain_whitelist"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    domain = Column(String(255), unique=True, nullable=False, index=True)
+    confidence_score = Column(Float, default=1.0)
+    added_by = Column(String(50), nullable=True)  # 'manual' or 'auto'
+    confirmation_count = Column(Integer, default=1)
+    last_seen = Column(DateTime, default=datetime.utcnow)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+# =============================================================================
+# Domain Blacklist
+# =============================================================================
+
+class DomainBlacklist(Base):
+    """Known malicious domains."""
+    __tablename__ = "domain_blacklist"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    domain = Column(String(255), unique=True, nullable=False, index=True)
+    threat_level = Column(String(20), nullable=True)  # HIGH, MEDIUM, LOW
+    added_by = Column(String(50), nullable=True)
+    report_count = Column(Integer, default=1)
+    last_seen = Column(DateTime, default=datetime.utcnow)
 
     created_at = Column(DateTime, default=datetime.utcnow)

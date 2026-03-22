@@ -145,34 +145,45 @@ def _process_email(db: Session, job: AnalysisJob):
         )
         db.add(extracted)
 
-    # Step 4: Domain intelligence (first URL or sender domain)
-    primary_domain = url_results[0].domain if url_results else None
-    domain_whois = None
+    # Step 4: Domain intelligence for every unique domain in extracted URLs
+    seen_domains: set[str] = set()
+    domain_whois = None  # keep reference to first domain for feature engineering
     domain_dns = None
     homograph_result = None
 
-    if primary_domain:
-        domain_whois = whois_lookup(primary_domain)
-        domain_dns = dns_lookup(primary_domain)
-        homograph_result = detect_homograph(primary_domain)
+    for url_res in url_results:
+        d = url_res.domain
+        if not d or d in seen_domains:
+            continue
+        seen_domains.add(d)
+
+        d_whois = whois_lookup(d)
+        d_dns = dns_lookup(d)
+        d_homograph = detect_homograph(d)
+
+        # Keep first domain's results for downstream feature engineering
+        if domain_whois is None:
+            domain_whois = d_whois
+            domain_dns = d_dns
+            homograph_result = d_homograph
 
         domain_intel = DomainIntelligence(
             analysis_id=analysis_id,
-            domain=primary_domain,
-            registrar=domain_whois.registrar,
-            registration_date=domain_whois.registration_date,
-            expiry_date=domain_whois.expiry_date,
-            domain_age_days=domain_whois.domain_age_days,
-            nameservers=domain_whois.nameservers,
+            domain=d,
+            registrar=d_whois.registrar,
+            registration_date=d_whois.registration_date,
+            expiry_date=d_whois.expiry_date,
+            domain_age_days=d_whois.domain_age_days,
+            nameservers=d_whois.nameservers,
             dns_records={
-                "a": domain_dns.a_records,
-                "mx": domain_dns.mx_records,
-                "txt": domain_dns.txt_records,
-                "ns": domain_dns.ns_records,
+                "a": d_dns.a_records,
+                "mx": d_dns.mx_records,
+                "txt": d_dns.txt_records,
+                "ns": d_dns.ns_records,
             },
-            is_homograph=homograph_result.is_homograph if homograph_result else False,
-            brand_impersonation=homograph_result.matched_brand is not None if homograph_result else False,
-            brand_keyword=homograph_result.matched_brand if homograph_result else None,
+            is_homograph=d_homograph.is_homograph if d_homograph else False,
+            brand_impersonation=d_homograph.matched_brand is not None if d_homograph else False,
+            brand_keyword=d_homograph.matched_brand if d_homograph else None,
         )
         db.add(domain_intel)
 
@@ -277,6 +288,37 @@ def _process_email(db: Session, job: AnalysisJob):
         )
         db.add(indicator)
 
+    # Step 8b: ML ensemble prediction (runs alongside rule-based scoring)
+    ml_result = None
+    try:
+        from app.ml.ml_integration import get_ml_integration
+
+        ml = get_ml_integration()
+        ml_email_data = {
+            "from": parsed.sender or "",
+            "return_path": parsed.return_path or "",
+            "reply_to": parsed.reply_to or "",
+            "subject": parsed.subject or "",
+            "body_text": parsed.body_text or "",
+            "body_html": parsed.body_html or "",
+            "authentication_results": _build_auth_string(header_result),
+            "urls": parsed.urls or [],
+            "received_headers": parsed.received_headers or [],
+            "message_id": (parsed.headers or {}).get("message-id", ""),
+            "x_mailer": (parsed.headers or {}).get("x-mailer", ""),
+            "list_unsubscribe": (parsed.headers or {}).get("list-unsubscribe", ""),
+            "attachments": parsed.attachments or [],
+        }
+        ml_result = ml.analyze_email(analysis_id, ml_email_data)
+        logger.info(
+            "ml_prediction_complete",
+            analysis_id=analysis_id,
+            ml_verdict=ml_result.get("prediction"),
+            ml_confidence=ml_result.get("confidence"),
+        )
+    except Exception as exc:
+        logger.warning("ml_prediction_skipped", analysis_id=analysis_id, error=str(exc))
+
     # Step 9: Generate and persist report
     report_data = generate_report(
         analysis_id=analysis_id,
@@ -286,12 +328,22 @@ def _process_email(db: Session, job: AnalysisJob):
         url_results=url_results,
     )
 
+    # Include ML result in report data if available
+    if ml_result and ml_result.get("prediction") != "UNKNOWN":
+        report_data["ml_prediction"] = {
+            "verdict": ml_result.get("prediction"),
+            "confidence": ml_result.get("confidence"),
+            "reasoning": ml_result.get("reasoning"),
+            "stage": ml_result.get("stage"),
+        }
+
     report = InvestigationReport(
         analysis_id=analysis_id,
         verdict=Verdict(risk_result.verdict),
         risk_score=risk_result.risk_score,
         report_data=report_data,
         top_contributors=risk_result.top_contributors,
+        phishing_probability=ml_result.get("phishing_probability") if ml_result else None,
     )
     db.add(report)
     db.commit()
@@ -487,6 +539,24 @@ def _get_feature_category(feature_name: str) -> str:
             return category
 
     return "other"
+
+
+def _build_auth_string(header_result) -> str:
+    """Convert header analysis result into an auth string for ML feature extraction."""
+    parts = []
+    if header_result.spf_pass is True:
+        parts.append("spf=pass")
+    elif header_result.spf_pass is False:
+        parts.append("spf=fail")
+    if header_result.dkim_pass is True:
+        parts.append("dkim=pass")
+    elif header_result.dkim_pass is False:
+        parts.append("dkim=fail")
+    if header_result.dmarc_pass is True:
+        parts.append("dmarc=pass")
+    elif header_result.dmarc_pass is False:
+        parts.append("dmarc=fail")
+    return " ".join(parts)
 
 
 def _log_audit(db: Session, event_type: str, analysis_id: str, detail: str = None):
