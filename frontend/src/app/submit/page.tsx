@@ -209,7 +209,7 @@ export default function SubmitPage() {
                       className="text-xs"
                       style={{ color: "var(--color-phismail-text-muted)" }}
                     >
-                      {(file.size / 1024).toFixed(1)} KB — ready to analyze
+                      {(file.size / 1024).toFixed(1)} KB, ready to analyze
                     </p>
                     <button
                       className="text-xs underline mt-1"
@@ -283,7 +283,7 @@ export default function SubmitPage() {
             className="text-xs font-mono font-bold uppercase tracking-widest"
             style={{ color: "var(--color-phismail-text-muted)" }}
           >
-            [ Learner notes ]
+            Learner notes
           </h3>
 
           {tips.map((tip) => (

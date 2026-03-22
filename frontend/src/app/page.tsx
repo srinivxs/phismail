@@ -132,7 +132,7 @@ export default function Dashboard() {
             Common phishing tactics
           </h2>
           <span className="text-sm" style={{ color: "var(--color-phismail-text-muted)" }}>
-            — what attackers rely on
+            What attackers rely on
           </span>
         </div>
 
@@ -168,7 +168,7 @@ export default function Dashboard() {
             What we analyze
           </h2>
           <span className="text-sm" style={{ color: "var(--color-phismail-text-muted)" }}>
-            — 9 detection modules, ~80 features
+            9 detection modules, ~80 features
           </span>
         </div>
 

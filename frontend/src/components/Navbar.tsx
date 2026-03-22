@@ -76,9 +76,8 @@ export default function Navbar() {
         {/* ── Logo ── */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <span className="text-base font-bold tracking-tight font-mono" style={{ letterSpacing: "-0.01em" }}>
-            <span style={{ color: "var(--color-phismail-purple)" }}>[</span>
-            <span style={{ color: "var(--color-phismail-text)" }}>PhisMail</span>
-            <span style={{ color: "var(--color-phismail-green)" }}>]</span>
+            <span style={{ color: "var(--color-phismail-purple)" }}>Phis</span>
+            <span style={{ color: "var(--color-phismail-text)" }}>Mail</span>
           </span>
           <span
             className="hidden sm:inline-flex text-[10px] px-1.5 py-0.5 rounded font-mono"

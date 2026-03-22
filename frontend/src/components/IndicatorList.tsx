@@ -14,146 +14,130 @@ const severityOrder: Record<string, number> = {
   LOW: 3,
 };
 
-const severityBar: Record<string, string> = {
+const severityColor: Record<string, string> = {
   CRITICAL: "#f43f5e",
   HIGH:     "#f97316",
   MEDIUM:   "#eab308",
   LOW:      "#22c55e",
 };
 
-/* Plain-language labels and explanations for each indicator type */
-const INDICATOR_INFO: Record<string, { label: string; explanation: string }> = {
+/* Concise, actionable explanations per indicator type */
+const INDICATOR_INFO: Record<string, { label: string; risk: string; action: string }> = {
   spf_fail: {
-    label: "SPF authentication failed",
-    explanation: "SPF (Sender Policy Framework) verifies that the mail server is authorized to send email for this domain. A failure means the email likely wasn't sent by who it claims to be — a core sign of spoofing.",
+    label: "SPF failed",
+    risk: "The sending server is not authorized for this domain. High spoofing likelihood.",
+    action: "Do not trust the sender identity. Verify through a separate channel.",
   },
   dkim_fail: {
-    label: "DKIM signature invalid",
-    explanation: "DKIM (DomainKeys Identified Mail) cryptographically signs emails to prove they haven't been altered in transit. An invalid signature means the email may be forged or tampered with.",
+    label: "DKIM invalid",
+    risk: "Email signature verification failed. Message may be forged or altered in transit.",
+    action: "Treat content as potentially tampered. Do not click links or open attachments.",
   },
   dmarc_fail: {
-    label: "DMARC policy violation",
-    explanation: "DMARC ties SPF and DKIM together and tells receiving servers what to do when checks fail. A DMARC failure means the sender's domain couldn't be verified by either method.",
+    label: "DMARC failed",
+    risk: "Domain authentication failed both SPF and DKIM checks.",
+    action: "Strong spoofing signal. Report to your security team.",
   },
   reply_to_mismatch: {
-    label: "Reply-To address mismatch",
-    explanation: "The Reply-To address uses a different domain than the From address. Attackers do this to intercept your reply while appearing to come from a trusted source — one of the most reliable phishing signals.",
+    label: "Reply-To mismatch",
+    risk: "Reply address points to a different domain than the sender. Replies would go to the attacker.",
+    action: "Never reply directly. Contact the supposed sender through official channels.",
   },
   return_path_mismatch: {
-    label: "Return-Path domain mismatch",
-    explanation: "The bounce address (Return-Path) belongs to a different domain than the sender. Legitimate senders keep these consistent — a mismatch suggests the email infrastructure is being spoofed.",
+    label: "Return-Path mismatch",
+    risk: "Bounce address uses a different domain. Infrastructure is inconsistent with claimed sender.",
+    action: "Indicates mail system spoofing. Cross-reference with known sender domains.",
   },
   sender_domain_mismatch: {
-    label: "Sender domain inconsistency",
-    explanation: "The From, Reply-To, and Return-Path headers reference different domains. All three should agree on who sent the email. Conflicting domains indicate header spoofing.",
+    label: "Sender domain conflict",
+    risk: "From, Reply-To, and Return-Path headers reference different domains.",
+    action: "Multiple conflicting identities is a strong spoofing indicator.",
   },
   homograph_domain: {
-    label: "Homograph / lookalike domain",
-    explanation: "The domain uses Unicode characters that look visually identical to standard letters (e.g. Cyrillic 'а' instead of Latin 'a'). These are called homograph attacks — the URL looks legitimate but isn't.",
+    label: "Homograph domain",
+    risk: "Domain uses lookalike Unicode characters (e.g. Cyrillic 'a' vs Latin 'a').",
+    action: "Visually deceptive. Copy-paste the domain into a text editor to reveal hidden characters.",
   },
   typosquat_domain: {
-    label: "Typosquatting domain detected",
-    explanation: "The domain closely resembles a well-known brand name with a small misspelling (e.g. paypa1.com, g00gle.net). These are registered to deceive users who don't inspect URLs carefully.",
+    label: "Typosquat detected",
+    risk: "Domain closely mimics a known brand with subtle misspelling.",
+    action: "Compare character-by-character against the real domain. Block this domain.",
   },
   brand_impersonation: {
     label: "Brand impersonation",
-    explanation: "A trusted brand name (PayPal, Microsoft, Apple, etc.) appears in the domain or email content in a deceptive way. Attackers use brand names to borrow the trust users have in those companies.",
+    risk: "Trusted brand name used deceptively in the domain or content.",
+    action: "Go to the brand's official website directly. Do not follow links from this email.",
   },
   new_domain: {
-    label: "Recently registered domain",
-    explanation: "The sending domain was registered very recently. Attackers register fresh domains for each campaign specifically because new domains have no spam reputation history.",
+    label: "New domain",
+    risk: "Domain registered recently. Fresh domains are commonly used in phishing campaigns.",
+    action: "Newly registered + unsolicited email = high risk. Treat with extreme caution.",
   },
   url_contains_ip: {
-    label: "IP address used instead of domain",
-    explanation: "The URL uses a raw IP address (e.g. http://192.168.1.1/login) instead of a domain name. Legitimate services never do this — using an IP bypasses DNS-based blocklists.",
+    label: "IP address in URL",
+    risk: "URL uses a raw IP instead of a domain. Legitimate services never do this.",
+    action: "Do not visit. IP-based URLs bypass DNS blocklists and hide the operator.",
   },
   url_shortened: {
-    label: "Shortened URL detected",
-    explanation: "A URL shortener (bit.ly, tinyurl, etc.) was used to hide the true destination. Users and security tools can't inspect where the link leads without following it.",
+    label: "Shortened URL",
+    risk: "Link shortener hides the true destination. Cannot verify safety without following.",
+    action: "Use a URL expander tool before clicking. PhisMail traces these automatically.",
   },
   redirect_chain: {
-    label: "Multi-hop redirect chain",
-    explanation: "The URL goes through multiple redirects before reaching its destination. This is used to route traffic through legitimate-looking domains before landing on the phishing page.",
+    label: "Redirect chain",
+    risk: "URL bounces through multiple servers before reaching destination.",
+    action: "Each hop can mask the final landing page. Check the final destination domain.",
   },
   final_domain_mismatch: {
     label: "Redirect destination mismatch",
-    explanation: "After following all redirects, the final destination domain is different from the original link. The original URL appeared safe but ultimately delivered the user to a different, potentially malicious site.",
+    risk: "After all redirects, the final domain differs from the original link.",
+    action: "The displayed link is deceptive. The actual destination is different.",
   },
   executable_attachment: {
     label: "Executable attachment",
-    explanation: "An executable file (.exe, .bat, .cmd, .scr) is attached to the email. Legitimate businesses never send executables via email — this is a primary malware delivery mechanism.",
+    risk: "Contains .exe, .bat, .cmd, or .scr file. Primary malware delivery method.",
+    action: "Never open executable attachments from email. Delete immediately.",
   },
   double_extension: {
-    label: "Double extension file",
-    explanation: "An attachment uses a misleading double extension (e.g. invoice.pdf.exe). Windows hides known extensions by default, making this appear as 'invoice.pdf' — a classic malware disguise.",
+    label: "Double extension",
+    risk: "File uses misleading extension (e.g. invoice.pdf.exe appears as invoice.pdf).",
+    action: "Enable 'show file extensions' in your OS. Do not open this file.",
   },
   macro_document: {
-    label: "Macro-enabled Office document",
-    explanation: "An attached Office document contains embedded macros. When the victim enables macros, arbitrary code runs silently. This is one of the most common malware delivery methods.",
+    label: "Macro document",
+    risk: "Office file contains embedded macros that can execute arbitrary code.",
+    action: "Never enable macros from untrusted sources. Report the attachment.",
   },
   urgency_language: {
-    label: "Urgency language detected",
-    explanation: "Words and phrases designed to create time pressure ('immediately', 'final notice', 'action required') were found. Artificial urgency short-circuits careful decision-making — a core social engineering tactic.",
+    label: "Urgency language",
+    risk: "Time-pressure phrases detected: 'immediately', 'final notice', 'act now'.",
+    action: "Artificial urgency is designed to prevent you from thinking critically. Slow down.",
   },
   credential_request: {
-    label: "Credential harvesting language",
-    explanation: "Phrases that prompt you to enter login details ('verify your account', 'confirm your password') were detected. These direct victims to fake login pages designed to capture credentials.",
+    label: "Credential harvesting",
+    risk: "Prompts to enter login details: 'verify your account', 'confirm password'.",
+    action: "Never enter credentials from an email link. Go to the service directly via your browser.",
   },
   financial_language: {
-    label: "Financial manipulation language",
-    explanation: "Financial trigger words ('wire transfer', 'invoice', 'payment failed') were found. These create fear around money to bypass rational thinking and prompt immediate action.",
+    label: "Financial trigger",
+    risk: "Payment-related language detected: 'wire transfer', 'invoice', 'payment failed'.",
+    action: "Verify through your financial institution directly. Do not act on email instructions.",
   },
   threat_intel_match: {
-    label: "URL matched threat intelligence feed",
-    explanation: "One or more URLs in this email were found in real-time phishing or malware feeds (OpenPhish, PhishTank, URLHaus). These feeds are maintained by the security community and list known-malicious URLs.",
+    label: "Threat feed match",
+    risk: "URL found in active phishing/malware feeds (OpenPhish, PhishTank, URLHaus).",
+    action: "Confirmed malicious. Do not visit. Block the domain organization-wide.",
   },
   javascript_in_email: {
-    label: "JavaScript in email body",
-    explanation: "JavaScript code was found inside the email HTML. Legitimate emails never contain JavaScript. Its presence suggests an attempt to run code in your email client to steal data or redirect you.",
+    label: "JavaScript in email",
+    risk: "Script code detected in email HTML. Legitimate emails never contain JavaScript.",
+    action: "Potential XSS or redirect attack. Do not interact with this email.",
   },
 };
 
 function humanLabel(indicatorType: string): string {
   return INDICATOR_INFO[indicatorType]?.label
     ?? indicatorType.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function Explanation({ indicatorType, detail }: { indicatorType: string; detail?: string }) {
-  const info = INDICATOR_INFO[indicatorType];
-  if (!info && !detail) return null;
-
-  return (
-    <div className="mt-3 space-y-2">
-      {detail && (
-        <div
-          className="rounded-lg p-3 text-sm"
-          style={{
-            background: "rgba(245,158,11,0.05)",
-            border: "1px solid rgba(245,158,11,0.15)",
-          }}
-        >
-          <p
-            className="text-xs font-mono font-bold uppercase tracking-wider mb-1"
-            style={{ color: "var(--color-phismail-purple)" }}
-          >
-            Finding in this email
-          </p>
-          <p style={{ color: "var(--color-phismail-text)", lineHeight: 1.6 }}>{detail}</p>
-        </div>
-      )}
-      {info?.explanation && (
-        <div className="edu-callout text-sm">
-          <p
-            className="text-xs font-mono font-bold uppercase tracking-wider mb-1"
-            style={{ color: "var(--color-phismail-green)" }}
-          >
-            What this means
-          </p>
-          {info.explanation}
-        </div>
-      )}
-    </div>
-  );
 }
 
 export default function IndicatorList({ indicators }: IndicatorListProps) {
@@ -172,94 +156,154 @@ export default function IndicatorList({ indicators }: IndicatorListProps) {
           border: "1px solid var(--color-phismail-border)",
         }}
       >
-        <p className="text-2xl mb-2">✅</p>
-        <p className="font-semibold" style={{ color: "var(--color-phismail-text)" }}>
-          No indicators detected
-        </p>
-        <p className="text-sm mt-1" style={{ color: "var(--color-phismail-text-muted)" }}>
-          No suspicious signals were found in this analysis.
+        <p className="text-2xl mb-2">No indicators detected</p>
+        <p className="text-sm" style={{ color: "var(--color-phismail-text-muted)" }}>
+          No suspicious signals found in this analysis.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div
+      className="rounded-xl overflow-hidden"
+      style={{ border: "1px solid var(--color-phismail-border)" }}
+    >
       {sorted.map((ind, i) => {
         const isOpen = expandedIdx === i;
-        const barColor = severityBar[ind.severity] ?? "#94a3b8";
-        const hasExplanation =
-          !!ind.detail || !!INDICATOR_INFO[ind.indicator_type];
+        const color = severityColor[ind.severity] ?? "#94a3b8";
+        const info = INDICATOR_INFO[ind.indicator_type];
+        const hasDetail = !!ind.detail || !!info;
 
         return (
-          <div key={i} className="evidence-item">
-            {/* Severity bar */}
-            <div
-              className="evidence-item-bar"
-              style={{ background: barColor }}
-            />
+          <div
+            key={i}
+            style={{
+              borderBottom:
+                i < sorted.length - 1
+                  ? "1px solid var(--color-phismail-border)"
+                  : "none",
+            }}
+          >
+            <button
+              className="w-full text-left flex items-center gap-4 px-5 py-3.5 transition-colors"
+              onClick={() => hasDetail && setExpandedIdx(isOpen ? null : i)}
+              style={{
+                cursor: hasDetail ? "pointer" : "default",
+                background: isOpen ? "var(--color-phismail-surface)" : "var(--color-phismail-panel)",
+              }}
+            >
+              {/* Severity dot */}
+              <span
+                className="w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ background: color, boxShadow: `0 0 6px ${color}40` }}
+              />
 
-            <div className="evidence-item-content">
-              <button
-                className="w-full text-left"
-                onClick={() =>
-                  hasExplanation && setExpandedIdx(isOpen ? null : i)
-                }
-                style={{ cursor: hasExplanation ? "pointer" : "default" }}
+              {/* Label */}
+              <span
+                className="flex-1 text-sm font-medium min-w-0 truncate"
+                style={{ color: "var(--color-phismail-text)" }}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-3 min-w-0 flex-1">
-                    <span
-                      className={`badge badge-${ind.severity.toLowerCase()} shrink-0 mt-0.5`}
-                    >
-                      {ind.severity}
-                    </span>
-                    <div className="min-w-0">
-                      <p
-                        className="font-semibold text-sm leading-snug"
-                        style={{ color: "var(--color-phismail-text)" }}
-                      >
-                        {humanLabel(ind.indicator_type)}
-                      </p>
-                      {ind.detail && !isOpen && (
-                        <p
-                          className="text-xs mt-0.5 truncate"
-                          style={{ color: "var(--color-phismail-text-muted)" }}
-                        >
-                          {ind.detail}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                {humanLabel(ind.indicator_type)}
+              </span>
 
-                  <div className="flex items-center gap-3 shrink-0">
-                    {ind.confidence !== undefined && ind.confidence !== null && (
-                      <span
-                        className="text-xs font-mono"
-                        style={{ color: "var(--color-phismail-text-muted)" }}
+              {/* Severity tag */}
+              <span
+                className="text-[10px] font-bold font-mono uppercase px-2 py-0.5 rounded shrink-0"
+                style={{
+                  color: color,
+                  background: `${color}15`,
+                  border: `1px solid ${color}30`,
+                }}
+              >
+                {ind.severity}
+              </span>
+
+              {/* Confidence */}
+              {ind.confidence != null && (
+                <span
+                  className="text-xs font-mono shrink-0"
+                  style={{ color: "var(--color-phismail-text-muted)" }}
+                >
+                  {(ind.confidence * 100).toFixed(0)}%
+                </span>
+              )}
+
+              {/* Expand arrow */}
+              {hasDetail && (
+                <span
+                  className="text-[10px] shrink-0 transition-transform"
+                  style={{
+                    color: "var(--color-phismail-text-muted)",
+                    transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                  }}
+                >
+                  ▼
+                </span>
+              )}
+            </button>
+
+            {/* Expanded detail */}
+            {isOpen && (
+              <div
+                className="px-5 pb-4 pt-1"
+                style={{ background: "var(--color-phismail-surface)" }}
+              >
+                {/* Finding in this email */}
+                {ind.detail && (
+                  <div
+                    className="rounded-lg px-4 py-3 mb-2.5 text-sm leading-relaxed"
+                    style={{
+                      background: `${color}08`,
+                      borderLeft: `3px solid ${color}`,
+                      color: "var(--color-phismail-text)",
+                    }}
+                  >
+                    {ind.detail}
+                  </div>
+                )}
+
+                {/* Risk + Action */}
+                {info && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div
+                      className="rounded-lg px-4 py-3 text-sm"
+                      style={{
+                        background: "var(--color-phismail-panel)",
+                        border: "1px solid var(--color-phismail-border)",
+                      }}
+                    >
+                      <p
+                        className="text-[10px] font-bold font-mono uppercase tracking-wider mb-1.5"
+                        style={{ color: color }}
                       >
-                        {(ind.confidence * 100).toFixed(0)}% conf
-                      </span>
-                    )}
-                    {hasExplanation && (
-                      <span
-                        className="text-xs font-mono"
+                        Risk
+                      </p>
+                      <p className="leading-relaxed" style={{ color: "var(--color-phismail-text-muted)" }}>
+                        {info.risk}
+                      </p>
+                    </div>
+                    <div
+                      className="rounded-lg px-4 py-3 text-sm"
+                      style={{
+                        background: "var(--color-phismail-panel)",
+                        border: "1px solid var(--color-phismail-border)",
+                      }}
+                    >
+                      <p
+                        className="text-[10px] font-bold font-mono uppercase tracking-wider mb-1.5"
                         style={{ color: "var(--color-phismail-green)" }}
                       >
-                        {isOpen ? "▲ less" : "▼ explain"}
-                      </span>
-                    )}
+                        What to do
+                      </p>
+                      <p className="leading-relaxed" style={{ color: "var(--color-phismail-text-muted)" }}>
+                        {info.action}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </button>
-
-              {isOpen && (
-                <Explanation
-                  indicatorType={ind.indicator_type}
-                  detail={ind.detail}
-                />
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
         );
       })}

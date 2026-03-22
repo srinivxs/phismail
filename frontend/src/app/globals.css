@@ -177,19 +177,10 @@ body {
 .neon-text-blue  { color: var(--color-phismail-purple); }
 .neon-text-green { color: var(--color-phismail-green); }
 
-/* Code bracket section header */
-.bracket-header::before {
-  content: '[ ';
-  color: var(--color-phismail-purple);
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-}
-
-.bracket-header::after {
-  content: ' ]';
-  color: var(--color-phismail-green);
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
+/* Section header accent (left border) */
+.section-header-accent {
+  border-left: 3px solid var(--color-phismail-purple);
+  padding-left: 12px;
 }
 
 /* =============================================================================
@@ -469,34 +460,7 @@ nav {
   font-size: 0.875rem;
 }
 
-/* =============================================================================
-   EVIDENCE ITEM — indicator card with side accent bar
-============================================================================= */
-.evidence-item {
-  display: flex;
-  gap: 0;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid var(--color-phismail-border);
-  background: var(--color-phismail-panel);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.evidence-item:hover {
-  border-color: var(--color-phismail-border-hover);
-  box-shadow: 0 2px 16px rgba(34, 211, 238, 0.06);
-}
-
-.evidence-item-bar {
-  width: 4px;
-  flex-shrink: 0;
-}
-
-.evidence-item-content {
-  flex: 1;
-  padding: 14px 16px;
-  min-width: 0;
-}
+/* Evidence items are now rendered inline in IndicatorList component */
 
 /* =============================================================================
    MODULE CARD — for educational "what we analyze" grid

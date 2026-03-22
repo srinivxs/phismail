@@ -293,13 +293,14 @@ export default function AnalysisPage() {
   const palette = VERDICT_PALETTE[report.verdict] ?? VERDICT_PALETTE.SAFE;
   const submittedAt = report.created_at
     ? new Date(report.created_at).toLocaleString()
-    : "—";
+    : "N/A";
   const verdictIcon = VERDICT_ICON[report.verdict] ?? "🔍";
   const verdictSummary = VERDICT_SUMMARY[report.verdict];
 
   const criticalAndHighCount = report.indicators.filter(
     (i) => i.severity === "CRITICAL" || i.severity === "HIGH"
   ).length;
+
 
   return (
     <div className="space-y-6 pt-8">
@@ -449,7 +450,7 @@ export default function AnalysisPage() {
         <section>
           <SectionHeader
             title="Key findings"
-            subtitle="— the signals that most influenced the verdict"
+            subtitle="Top signals that influenced the verdict"
           />
           <KeyFindings indicators={report.indicators} />
         </section>
@@ -462,7 +463,7 @@ export default function AnalysisPage() {
         <section>
           <SectionHeader
             title="All indicators"
-            subtitle="— click any row to learn what it means"
+            subtitle="Click any row for details"
             count={report.indicators.length}
           />
           <IndicatorList indicators={report.indicators} />
@@ -476,7 +477,7 @@ export default function AnalysisPage() {
         <section>
           <SectionHeader
             title="Risk score breakdown"
-            subtitle="— what drove the score up or down"
+            subtitle="What drove the score up or down"
           />
           <ExplainabilityChart
             contributors={report.top_contributors}
@@ -550,7 +551,7 @@ export default function AnalysisPage() {
             />
             <div className="space-y-3">
               {report.domain_intelligence.map((d, i) => (
-                <DomainIntelCard key={i} domain={d} />
+                <DomainIntelCard key={`intel-${i}`} domain={d} />
               ))}
             </div>
           </section>
