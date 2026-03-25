@@ -1,271 +1,222 @@
 @import "tailwindcss";
 
 /* =============================================================================
-   STATIC TOKENS — severity & verdict colours, never change between themes
+   DESIGN SYSTEM — PhisMail Command Center
+   Zinc palette · Blue accent · Clean, professional, zero decoration noise
 ============================================================================= */
+
+/* Static severity/verdict tokens — never change between themes */
 @theme inline {
-  --color-severity-critical: #f43f5e;
+  --color-severity-critical: #ef4444;
   --color-severity-high:     #f97316;
   --color-severity-medium:   #eab308;
   --color-severity-low:      #22c55e;
   --color-verdict-safe:      #22c55e;
-  --color-verdict-suspicious: #eab308;
-  --color-verdict-phishing:  #f43f5e;
+  --color-verdict-suspicious:#eab308;
+  --color-verdict-phishing:  #ef4444;
 }
 
 /* =============================================================================
-   DARK THEME — "Analyst Workbench"
-   Deep navy canvas · amber investigation accent · cyan data accent
+   DARK THEME (default)
 ============================================================================= */
 :root {
   color-scheme: dark;
 
-  --color-phismail-bg:            #090e1a;
-  --color-phismail-surface:       #0f1629;
-  --color-phismail-panel:         rgba(15, 22, 41, 0.88);
-  --color-phismail-border:        rgba(245, 158, 11, 0.18);
-  --color-phismail-border-active: rgba(34, 211, 238, 0.50);
-  --color-phismail-border-hover:  rgba(34, 211, 238, 0.28);
+  --pm-bg:             #09090b;
+  --pm-surface:        #18181b;
+  --pm-surface-hover:  #27272a;
+  --pm-border:         rgba(255, 255, 255, 0.06);
+  --pm-border-hover:   rgba(255, 255, 255, 0.12);
 
-  --color-phismail-purple:        #f59e0b;   /* amber — primary/investigation accent */
-  --color-phismail-purple-light:  #fbbf24;
-  --color-phismail-purple-dark:   #d97706;
-  --color-phismail-purple-glow:   rgba(245, 158, 11, 0.10);
+  --pm-accent:         #3b82f6;
+  --pm-accent-hover:   #2563eb;
+  --pm-accent-muted:   rgba(59, 130, 246, 0.10);
+  --pm-accent-glow:    rgba(59, 130, 246, 0.15);
 
-  --color-phismail-green:         #22d3ee;   /* cyan — technical/data accent */
-  --color-phismail-green-glow:    rgba(34, 211, 238, 0.08);
+  --pm-text:           #fafafa;
+  --pm-text-secondary: #a1a1aa;
+  --pm-text-muted:     #52525b;
 
-  --color-phismail-text:          #f1f5f9;
-  --color-phismail-text-muted:    #94a3b8;
-  --color-phismail-text-dim:      #1e293b;
+  --pm-success:        #22c55e;
+  --pm-warning:        #eab308;
+  --pm-danger:         #ef4444;
 
-  --color-phismail-nav-bg:        rgba(9, 14, 26, 0.96);
-  --color-phismail-grid-line:     rgba(245, 158, 11, 0.03);
-  --color-phismail-scrollbar:     #f59e0b;
-  --color-phismail-input-bg:      rgba(15, 22, 41, 0.80);
+  --pm-nav-bg:         rgba(9, 9, 11, 0.80);
+  --pm-input-bg:       #18181b;
+  --pm-scrollbar:      #3f3f46;
+  --pm-dot-color:      rgba(255, 255, 255, 0.04);
 }
 
 /* =============================================================================
-   LIGHT THEME — "Analyst Light"
+   LIGHT THEME
 ============================================================================= */
 [data-theme="light"] {
   color-scheme: light;
 
-  --color-phismail-bg:            #f7f8fc;
-  --color-phismail-surface:       #ffffff;
-  --color-phismail-panel:         rgba(255, 255, 255, 0.95);
-  --color-phismail-border:        rgba(180, 120, 0, 0.14);
-  --color-phismail-border-active: rgba(8, 145, 178, 0.40);
-  --color-phismail-border-hover:  rgba(8, 145, 178, 0.25);
+  --pm-bg:             #fafafa;
+  --pm-surface:        #ffffff;
+  --pm-surface-hover:  #f4f4f5;
+  --pm-border:         #e4e4e7;
+  --pm-border-hover:   #d4d4d8;
 
-  --color-phismail-purple:        #b45309;
-  --color-phismail-purple-light:  #d97706;
-  --color-phismail-purple-dark:   #92400e;
-  --color-phismail-purple-glow:   rgba(180, 83, 9, 0.07);
+  --pm-accent:         #2563eb;
+  --pm-accent-hover:   #1d4ed8;
+  --pm-accent-muted:   rgba(37, 99, 235, 0.08);
+  --pm-accent-glow:    rgba(37, 99, 235, 0.12);
 
-  --color-phismail-green:         #0891b2;
-  --color-phismail-green-glow:    rgba(8, 145, 178, 0.07);
+  --pm-text:           #09090b;
+  --pm-text-secondary: #71717a;
+  --pm-text-muted:     #a1a1aa;
 
-  --color-phismail-text:          #0f172a;
-  --color-phismail-text-muted:    #475569;
-  --color-phismail-text-dim:      #cbd5e1;
+  --pm-success:        #16a34a;
+  --pm-warning:        #ca8a04;
+  --pm-danger:         #dc2626;
 
-  --color-phismail-nav-bg:        rgba(255, 255, 255, 0.96);
-  --color-phismail-grid-line:     rgba(180, 83, 9, 0.03);
-  --color-phismail-scrollbar:     #d97706;
-  --color-phismail-input-bg:      rgba(247, 248, 252, 0.90);
+  --pm-nav-bg:         rgba(250, 250, 250, 0.80);
+  --pm-input-bg:       #ffffff;
+  --pm-scrollbar:      #d4d4d8;
+  --pm-dot-color:      rgba(0, 0, 0, 0.04);
 }
 
 /* =============================================================================
-   BASE STYLES
+   BACKWARD COMPAT — map old var names to new ones so existing components work
 ============================================================================= */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+:root,
+[data-theme="light"] {
+  --color-phismail-bg:            var(--pm-bg);
+  --color-phismail-surface:       var(--pm-surface);
+  --color-phismail-panel:         var(--pm-surface);
+  --color-phismail-border:        var(--pm-border);
+  --color-phismail-border-active: var(--pm-accent);
+  --color-phismail-border-hover:  var(--pm-border-hover);
+  --color-phismail-purple:        var(--pm-accent);
+  --color-phismail-purple-light:  var(--pm-accent);
+  --color-phismail-purple-dark:   var(--pm-accent-hover);
+  --color-phismail-purple-glow:   var(--pm-accent-muted);
+  --color-phismail-green:         var(--pm-success);
+  --color-phismail-green-glow:    var(--pm-accent-muted);
+  --color-phismail-text:          var(--pm-text);
+  --color-phismail-text-muted:    var(--pm-text-secondary);
+  --color-phismail-text-dim:      var(--pm-text-muted);
+  --color-phismail-nav-bg:        var(--pm-nav-bg);
+  --color-phismail-grid-line:     transparent;
+  --color-phismail-scrollbar:     var(--pm-scrollbar);
+  --color-phismail-input-bg:      var(--pm-input-bg);
 }
 
-html {
-  transition: color-scheme 0.2s;
-}
+/* =============================================================================
+   BASE
+============================================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { transition: color-scheme 0.2s; }
 
 body {
-  background-color: var(--color-phismail-bg);
-  color: var(--color-phismail-text);
-  /* Inter for readable body text; monospace for code/technical elements */
+  background-color: var(--pm-bg);
+  color: var(--pm-text);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Subtle dot grid background */
+.dot-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(var(--pm-dot-color) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 /* =============================================================================
-   CYBER CARD (glassmorphic panel)
+   CARDS
 ============================================================================= */
-.glass-panel {
-  background: var(--color-phismail-panel);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--color-phismail-border);
+.card {
+  background: var(--pm-surface);
+  border: 1px solid var(--pm-border);
   border-radius: 12px;
-  overflow: hidden;
-  transition:
-    border-color 0.25s ease,
-    box-shadow 0.25s ease,
-    background 0.25s ease;
+  transition: border-color 0.15s ease;
 }
 
-.glass-panel:hover {
-  border-color: var(--color-phismail-border-active);
-  box-shadow:
-    0 0 20px var(--color-phismail-green-glow),
-    0 0 40px rgba(34, 211, 238, 0.04);
+.card-interactive:hover {
+  border-color: var(--pm-border-hover);
 }
 
-.glass-panel-static {
-  background: var(--color-phismail-panel);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--color-phismail-border);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: background 0.25s ease, border-color 0.25s ease;
-}
-
-/* =============================================================================
-   EDUCATIONAL CALLOUT — human-readable explanation panels
-============================================================================= */
-.edu-callout {
-  background: rgba(34, 211, 238, 0.04);
-  border: 1px solid rgba(34, 211, 238, 0.15);
-  border-left: 3px solid var(--color-phismail-green);
-  border-radius: 8px;
-  padding: 14px 16px;
-  font-size: 0.875rem;
-  line-height: 1.6;
-  color: var(--color-phismail-text-muted);
-}
-
-.edu-callout-warn {
-  background: rgba(245, 158, 11, 0.05);
-  border: 1px solid rgba(245, 158, 11, 0.18);
-  border-left: 3px solid var(--color-phismail-purple);
-  border-radius: 8px;
-  padding: 14px 16px;
-  font-size: 0.875rem;
-  line-height: 1.6;
-  color: var(--color-phismail-text-muted);
-}
-
-/* =============================================================================
-   NEON GLOW UTILITIES
-============================================================================= */
-.neon-text-amber {
-  color: var(--color-phismail-purple);
-  text-shadow:
-    0 0 10px rgba(245, 158, 11, 0.8),
-    0 0 20px rgba(245, 158, 11, 0.4);
-}
-
-.neon-text-cyan {
-  color: var(--color-phismail-green);
-  text-shadow:
-    0 0 10px rgba(34, 211, 238, 0.8),
-    0 0 20px rgba(34, 211, 238, 0.4);
-}
-
-/* Legacy aliases */
-.neon-text-blue  { color: var(--color-phismail-purple); }
-.neon-text-green { color: var(--color-phismail-green); }
-
-/* Section header accent (left border) */
-.section-header-accent {
-  border-left: 3px solid var(--color-phismail-purple);
-  padding-left: 12px;
-}
+/* Legacy glass-panel maps to card */
+.glass-panel { background: var(--pm-surface); border: 1px solid var(--pm-border); border-radius: 12px; overflow: hidden; transition: border-color 0.15s ease; }
+.glass-panel:hover { border-color: var(--pm-border-hover); }
+.glass-panel-static { background: var(--pm-surface); border: 1px solid var(--pm-border); border-radius: 12px; overflow: hidden; }
 
 /* =============================================================================
    BUTTONS
 ============================================================================= */
 .btn-primary {
-  background: var(--color-phismail-purple);
-  color: #000000;
-  padding: 11px 28px;
+  background: var(--pm-accent);
+  color: #ffffff;
+  padding: 10px 24px;
   border-radius: 8px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.875rem;
-  letter-spacing: 0.02em;
-  border: 1px solid rgba(245, 158, 11, 0.6);
+  border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
-  font-family: 'JetBrains Mono', monospace;
-  box-shadow: 0 0 16px rgba(245, 158, 11, 0.30);
+  transition: background 0.15s ease, transform 0.1s ease;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .btn-primary:hover {
-  background: var(--color-phismail-purple-light);
-  box-shadow:
-    0 0 24px rgba(245, 158, 11, 0.55),
-    0 0 48px rgba(245, 158, 11, 0.18);
+  background: var(--pm-accent-hover);
   transform: translateY(-1px);
-  border-color: rgba(245, 158, 11, 0.9);
 }
 
-.btn-primary:active {
-  transform: translateY(0);
-}
+.btn-primary:active { transform: translateY(0); }
 
 .btn-primary:disabled {
-  opacity: 0.40;
+  opacity: 0.4;
   cursor: not-allowed;
   transform: none;
-  box-shadow: none;
+}
+
+.btn-secondary {
+  background: var(--pm-surface);
+  color: var(--pm-text-secondary);
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: 1px solid var(--pm-border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.btn-secondary:hover {
+  border-color: var(--pm-border-hover);
+  color: var(--pm-text);
+  background: var(--pm-surface-hover);
 }
 
 /* =============================================================================
-   SEVERITY BADGES
+   BADGES
 ============================================================================= */
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 2px 9px;
+  padding: 2px 8px;
   border-radius: 4px;
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.04em;
   white-space: nowrap;
   font-family: 'JetBrains Mono', monospace;
 }
 
-.badge-critical {
-  background: rgba(244, 63, 94, 0.12);
-  color: var(--color-severity-critical);
-  border: 1px solid rgba(244, 63, 94, 0.35);
-}
+.badge-critical { background: rgba(239, 68, 68, 0.10); color: var(--color-severity-critical); border: 1px solid rgba(239, 68, 68, 0.20); }
+.badge-high     { background: rgba(249, 115, 22, 0.10); color: var(--color-severity-high);     border: 1px solid rgba(249, 115, 22, 0.20); }
+.badge-medium   { background: rgba(234, 179, 8, 0.08);  color: var(--color-severity-medium);   border: 1px solid rgba(234, 179, 8, 0.18); }
+.badge-low      { background: rgba(34, 197, 94, 0.08);  color: var(--color-severity-low);      border: 1px solid rgba(34, 197, 94, 0.18); }
 
-.badge-high {
-  background: rgba(249, 115, 22, 0.12);
-  color: var(--color-severity-high);
-  border: 1px solid rgba(249, 115, 22, 0.35);
-}
-
-.badge-medium {
-  background: rgba(234, 179, 8, 0.10);
-  color: var(--color-severity-medium);
-  border: 1px solid rgba(234, 179, 8, 0.30);
-}
-
-.badge-low {
-  background: rgba(34, 197, 94, 0.10);
-  color: var(--color-severity-low);
-  border: 1px solid rgba(34, 197, 94, 0.30);
-}
-
-/* =============================================================================
-   VERDICT COLOURS
-============================================================================= */
 .verdict-safe       { color: var(--color-verdict-safe); }
 .verdict-suspicious { color: var(--color-verdict-suspicious); }
 .verdict-phishing   { color: var(--color-verdict-phishing); }
@@ -275,206 +226,136 @@ body {
 ============================================================================= */
 .soc-input {
   width: 100%;
-  background: var(--color-phismail-input-bg);
-  border: 1px solid var(--color-phismail-border);
+  background: var(--pm-input-bg);
+  border: 1px solid var(--pm-border);
   border-radius: 8px;
-  padding: 11px 14px;
-  color: var(--color-phismail-text);
+  padding: 10px 14px;
+  color: var(--pm-text);
   font-size: 0.875rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', system-ui, sans-serif;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.25s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .soc-input::placeholder {
-  color: var(--color-phismail-text-muted);
-  opacity: 0.6;
+  color: var(--pm-text-muted);
 }
 
 .soc-input:focus {
-  border-color: var(--color-phismail-purple);
-  box-shadow: 0 0 0 3px var(--color-phismail-purple-glow), 0 0 12px rgba(245, 158, 11, 0.18);
+  border-color: var(--pm-accent);
+  box-shadow: 0 0 0 3px var(--pm-accent-muted);
 }
 
 /* =============================================================================
    DROP ZONE
 ============================================================================= */
 .drop-zone {
-  border: 2px dashed var(--color-phismail-border);
+  border: 2px dashed var(--pm-border);
   border-radius: 12px;
   padding: 48px 32px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.15s ease;
 }
 
 .drop-zone:hover,
 .drop-zone.active {
-  border-color: var(--color-phismail-purple);
-  background: var(--color-phismail-purple-glow);
-  box-shadow: 0 0 24px rgba(245, 158, 11, 0.08);
+  border-color: var(--pm-accent);
+  background: var(--pm-accent-muted);
 }
 
 /* =============================================================================
-   RISK GAUGE ANIMATION
+   CALLOUTS
 ============================================================================= */
-@keyframes fillGauge {
-  from { stroke-dashoffset: 283; }
+.edu-callout {
+  background: var(--pm-accent-muted);
+  border: 1px solid var(--pm-border);
+  border-left: 3px solid var(--pm-accent);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--pm-text-secondary);
 }
 
-@keyframes pulseGlow {
-  0%, 100% { opacity: 0.8; }
-  50%       { opacity: 1.0; }
+.edu-callout-warn {
+  background: rgba(234, 179, 8, 0.06);
+  border: 1px solid var(--pm-border);
+  border-left: 3px solid var(--pm-warning);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--pm-text-secondary);
 }
 
 /* =============================================================================
-   LOADING SHIMMER
+   ANIMATIONS
 ============================================================================= */
+@keyframes fillGauge { from { stroke-dashoffset: 283; } }
+@keyframes pulseGlow { 0%, 100% { opacity: 0.8; } 50% { opacity: 1.0; } }
+
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position:  200% 0; }
 }
 
 .loading-shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--color-phismail-surface)  25%,
-    var(--color-phismail-panel)    50%,
-    var(--color-phismail-surface)  75%
-  );
+  background: linear-gradient(90deg, var(--pm-surface) 25%, var(--pm-surface-hover) 50%, var(--pm-surface) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.6s ease-in-out infinite;
   border-radius: 8px;
 }
 
-/* =============================================================================
-   ENTRANCE ANIMATIONS
-============================================================================= */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.45s ease-out both;
-}
-
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* =============================================================================
-   SCAN ANIMATIONS
-============================================================================= */
-@keyframes sonarPing {
-  0%   { transform: scale(0.6); opacity: 0.7; }
-  100% { transform: scale(2.2); opacity: 0; }
-}
-
-@keyframes barScan {
-  0%   { width: 0%;   margin-left: 0%; }
-  50%  { width: 60%;  margin-left: 20%; }
-  100% { width: 0%;   margin-left: 100%; }
-}
+.animate-fade-in-up { animation: fadeInUp 0.3s ease-out both; }
 
 @keyframes terminalBlink {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
-}
-
-@keyframes amberPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-  50%       { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+  50%      { opacity: 0; }
 }
 
 .terminal-cursor::after {
   content: '_';
   animation: terminalBlink 1s step-end infinite;
-  color: var(--color-phismail-green);
+  color: var(--pm-accent);
   font-family: 'JetBrains Mono', monospace;
 }
 
 /* =============================================================================
    SCROLLBAR
 ============================================================================= */
-::-webkit-scrollbar       { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: var(--color-phismail-surface); }
-::-webkit-scrollbar-thumb {
-  background: var(--color-phismail-scrollbar);
-  border-radius: 2px;
-}
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--pm-scrollbar); border-radius: 3px; }
 
 /* =============================================================================
-   NAV
+   TABLE
 ============================================================================= */
-nav {
-  transition: background 0.25s ease, border-color 0.25s ease;
-}
-
-/* =============================================================================
-   STAT CARD
-============================================================================= */
-.stat-card-accent {
-  border-top: 2px solid var(--color-phismail-purple);
-}
-
-/* =============================================================================
-   TABLE STYLES
-============================================================================= */
-.soc-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.soc-table thead tr {
-  border-bottom: 1px solid var(--color-phismail-border);
-}
-
+.soc-table { width: 100%; border-collapse: collapse; }
+.soc-table thead tr { border-bottom: 1px solid var(--pm-border); }
 .soc-table thead th {
   text-align: left;
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-phismail-text-muted);
-  padding: 10px 20px;
-  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--pm-text-secondary);
+  padding: 10px 16px;
+}
+.soc-table tbody tr { border-bottom: 1px solid var(--pm-border); transition: background 0.1s ease; }
+.soc-table tbody tr:last-child { border-bottom: none; }
+.soc-table tbody tr:hover { background: var(--pm-surface-hover); }
+.soc-table tbody td { padding: 12px 16px; font-size: 0.875rem; }
+
+/* Section accent */
+.section-header-accent {
+  border-left: 3px solid var(--pm-accent);
+  padding-left: 12px;
 }
 
-.soc-table tbody tr {
-  border-bottom: 1px solid var(--color-phismail-border);
-  transition: background 0.15s ease;
-}
-
-.soc-table tbody tr:last-child {
-  border-bottom: none;
-}
-
-.soc-table tbody tr:hover {
-  background: var(--color-phismail-purple-glow);
-}
-
-.soc-table tbody td {
-  padding: 13px 20px;
-  font-size: 0.875rem;
-}
-
-/* Evidence items are now rendered inline in IndicatorList component */
-
-/* =============================================================================
-   MODULE CARD — for educational "what we analyze" grid
-============================================================================= */
-.module-card {
-  background: var(--color-phismail-panel);
-  border: 1px solid var(--color-phismail-border);
-  border-radius: 12px;
-  padding: 20px;
-  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.module-card:hover {
-  border-color: var(--color-phismail-border-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(34, 211, 238, 0.06);
-}
+/* Legacy neon text — map to accent */
+.neon-text-amber, .neon-text-blue  { color: var(--pm-accent); text-shadow: none; }
+.neon-text-cyan, .neon-text-green  { color: var(--pm-success); text-shadow: none; }

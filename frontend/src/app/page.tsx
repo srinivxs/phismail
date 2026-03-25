@@ -4,53 +4,72 @@ import { useEffect, useState } from "react";
 import { listAnalyses, type AnalysisJob } from "@/lib/api";
 import Link from "next/link";
 
-/* ── Analysis module descriptions for learners ─────────────── */
-const MODULES = [
-  {
-    icon: "✉",
-    label: "Email Headers",
-    tech: "SPF · DKIM · DMARC",
-    desc: "Verifies the sender's identity by checking authentication records. Mismatches often mean the email is spoofed.",
-  },
-  {
-    icon: "🔗",
-    label: "URL Analysis",
-    tech: "Obfuscation · Redirect chains",
-    desc: "Inspects every link for deceptive structure, IP addresses instead of domains, and encoding tricks used to hide destinations.",
-  },
-  {
-    icon: "🌐",
-    label: "Domain Intelligence",
-    tech: "WHOIS · DNS · Typosquatting",
-    desc: "Looks up when a domain was registered, who owns it, and whether it visually mimics a trusted brand like PayPal or Google.",
-  },
-  {
-    icon: "🧠",
-    label: "Language Analysis",
-    tech: "NLP · Urgency · Credential bait",
-    desc: "Scans email body for psychological manipulation — urgency phrases, threats, and prompts to enter passwords or bank details.",
-  },
-  {
-    icon: "🛡",
-    label: "Threat Intelligence",
-    tech: "OpenPhish · PhishTank · URLhaus",
-    desc: "Cross-references all URLs against real-time phishing and malware feeds maintained by the security community.",
-  },
-  {
-    icon: "📎",
-    label: "Attachment Safety",
-    tech: "MIME · Macros · Double extensions",
-    desc: "Detects dangerous file types, executable disguised as documents, and Office files containing malicious macros.",
-  },
-];
+const STATUS_MAP: Record<string, { label: string; color: string }> = {
+  complete:   { label: "Complete",   color: "var(--pm-success)" },
+  processing: { label: "Running",    color: "var(--pm-warning)" },
+  failed:     { label: "Failed",     color: "var(--pm-danger)" },
+  pending:    { label: "Queued",     color: "var(--pm-text-muted)" },
+};
 
-/* ── Common phishing tactics for learner education ─────────── */
-const TACTICS = [
-  { label: "Urgency pressure", example: '"Your account will be suspended in 24 hours"', color: "#f59e0b" },
-  { label: "Impersonation", example: "paypa1.com · secure-login-microsoft.net", color: "#f43f5e" },
-  { label: "Hidden redirects", example: "bit.ly/xK2p → tracks → evil.ru/steal", color: "#f97316" },
-  { label: "Credential harvest", example: '"Verify your password to continue"', color: "#a78bfa" },
-];
+function timeAgo(dateStr: string): string {
+  const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (seconds < 60) return "just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
+
+/* Small reusable icon components */
+function MailIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+    </svg>
+  );
+}
+
+function LinkIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </svg>
+  );
+}
+
+function ArrowRightIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
+  );
+}
+
+function ShieldIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
 
 export default function Dashboard() {
   const [analyses, setAnalyses] = useState<AnalysisJob[]>([]);
@@ -62,224 +81,217 @@ export default function Dashboard() {
       .catch(() => setLoading(false));
   }, []);
 
+  const stats = {
+    total: analyses.length,
+    complete: analyses.filter((a) => a.status === "complete").length,
+    processing: analyses.filter((a) => a.status === "processing").length,
+  };
+
   return (
-    <div className="space-y-14">
+    <div className="space-y-10 pb-8">
 
-      {/* ══ HERO ══════════════════════════════════════════════════ */}
-      <section className="text-center pt-10">
-        <div
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 font-mono text-xs"
-          style={{
-            border: "1px solid var(--color-phismail-border)",
-            color: "var(--color-phismail-text-muted)",
-            background: "var(--color-phismail-surface)",
-          }}
-        >
-          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#22c55e" }} />
-          Analysis engine online · 9-stage forensic pipeline
-        </div>
-
-        <h1
-          className="text-5xl font-bold tracking-tight mb-4 leading-tight"
-          style={{ letterSpacing: "-0.02em" }}
-        >
-          <span style={{ color: "var(--color-phismail-purple)" }}>Spot</span>
-          <span style={{ color: "var(--color-phismail-text)" }}> phishing.</span>
-          <br />
-          <span style={{ color: "var(--color-phismail-text-muted)", fontWeight: 400, fontSize: "0.65em" }}>
-            Understand exactly why it&apos;s dangerous.
-          </span>
-        </h1>
-
-        <p
-          className="text-base max-w-lg mx-auto mb-10 leading-relaxed"
-          style={{ color: "var(--color-phismail-text-muted)" }}
-        >
-          Drop a suspicious email or paste a URL. PhisMail runs it through nine
-          detection modules and explains every finding in plain English — built
-          for analysts who want to learn, not just get a verdict.
-        </p>
-
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/submit"
-            className="btn-primary inline-flex items-center gap-2.5 justify-center"
+      {/* ── HERO ── */}
+      <section className="pt-10 pb-4">
+        <div className="max-w-2xl">
+          <h1
+            className="text-3xl sm:text-4xl font-semibold tracking-tight leading-tight mb-3"
+            style={{ color: "var(--pm-text)", letterSpacing: "-0.02em" }}
           >
-            <span style={{ fontFamily: "inherit" }}>📧</span>
-            Analyze suspicious email
-          </Link>
-          <Link
-            href="/submit"
-            className="inline-flex items-center gap-2.5 justify-center px-7 py-3 rounded-lg font-semibold text-sm transition-all duration-200"
-            style={{
-              background: "var(--color-phismail-surface)",
-              border: "1px solid var(--color-phismail-border)",
-              color: "var(--color-phismail-text)",
-              fontFamily: "'JetBrains Mono', monospace",
-            }}
+            Phishing analysis<br />
+            <span style={{ color: "var(--pm-accent)" }}>you can understand.</span>
+          </h1>
+
+          <p
+            className="text-base leading-relaxed mb-8 max-w-lg"
+            style={{ color: "var(--pm-text-secondary)" }}
           >
-            <span>🔗</span>
-            Check a suspicious URL
-          </Link>
+            9-stage forensic pipeline. Every signal explained in plain English.
+            Drop an email or paste a URL to start.
+          </p>
+
+          <div className="flex flex-wrap gap-3">
+            <Link href="/submit" className="btn-primary inline-flex items-center gap-2 text-sm">
+              Start analysis
+              <ArrowRightIcon />
+            </Link>
+            <a href="https://github.com/srinivxs/phismail" target="_blank" rel="noopener noreferrer" className="btn-secondary inline-flex items-center gap-2 text-sm">
+              View source
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* ══ COMMON PHISHING TACTICS ═══════════════════════════════ */}
-      <section>
-        <div className="flex items-baseline gap-3 mb-5">
-          <h2 className="text-lg font-bold" style={{ color: "var(--color-phismail-text)" }}>
-            Common phishing tactics
-          </h2>
-          <span className="text-sm" style={{ color: "var(--color-phismail-text-muted)" }}>
-            What attackers rely on
-          </span>
-        </div>
+      {/* ── STATS ── */}
+      <section className="grid grid-cols-3 gap-4">
+        {[
+          { label: "Total scans", value: stats.total, color: "var(--pm-accent)" },
+          { label: "Completed", value: stats.complete, color: "var(--pm-success)" },
+          { label: "In progress", value: stats.processing, color: "var(--pm-warning)" },
+        ].map((s) => (
+          <div
+            key={s.label}
+            className="card rounded-xl p-5"
+          >
+            <p className="text-xs font-medium mb-2" style={{ color: "var(--pm-text-secondary)" }}>
+              {s.label}
+            </p>
+            <p className="text-2xl font-semibold font-mono" style={{ color: s.color }}>
+              {loading ? "-" : s.value}
+            </p>
+          </div>
+        ))}
+      </section>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {TACTICS.map((t) => (
-            <div
-              key={t.label}
-              className="rounded-xl p-4"
-              style={{
-                background: "var(--color-phismail-surface)",
-                border: `1px solid ${t.color}28`,
-                borderLeft: `3px solid ${t.color}`,
-              }}
-            >
-              <p className="font-semibold text-sm mb-1.5" style={{ color: t.color }}>
-                {t.label}
-              </p>
-              <p
-                className="text-xs leading-relaxed font-mono"
-                style={{ color: "var(--color-phismail-text-muted)" }}
+      {/* ── HOW IT WORKS (replaces pipeline viz) ── */}
+      <section>
+        <h2 className="text-sm font-medium mb-4" style={{ color: "var(--pm-text-secondary)" }}>
+          How it works
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[
+            {
+              icon: <MailIcon />,
+              title: "Submit",
+              desc: "Upload an .eml file or paste a suspicious URL",
+            },
+            {
+              icon: <ShieldIcon />,
+              title: "Analyze",
+              desc: "9 engines check headers, URLs, domains, NLP, and threat feeds",
+            },
+            {
+              icon: <SearchIcon />,
+              title: "Understand",
+              desc: "Get a plain-English verdict with risk breakdown and actionable advice",
+            },
+          ].map((step, i) => (
+            <div key={i} className="card rounded-xl p-5 flex gap-4">
+              <div
+                className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                style={{
+                  background: "var(--pm-accent-muted)",
+                  color: "var(--pm-accent)",
+                }}
               >
-                {t.example}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ══ WHAT WE ANALYZE ═══════════════════════════════════════ */}
-      <section>
-        <div className="flex items-baseline gap-3 mb-5">
-          <h2 className="text-lg font-bold" style={{ color: "var(--color-phismail-text)" }}>
-            What we analyze
-          </h2>
-          <span className="text-sm" style={{ color: "var(--color-phismail-text-muted)" }}>
-            9 detection modules, ~80 features
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {MODULES.map((m) => (
-            <div key={m.label} className="module-card">
-              <div className="flex items-start gap-3 mb-3">
-                <span className="text-2xl leading-none">{m.icon}</span>
-                <div>
-                  <h3 className="font-semibold text-sm" style={{ color: "var(--color-phismail-text)" }}>
-                    {m.label}
-                  </h3>
-                  <p
-                    className="text-[11px] font-mono mt-0.5"
-                    style={{ color: "var(--color-phismail-purple)" }}
-                  >
-                    {m.tech}
-                  </p>
-                </div>
+                {step.icon}
               </div>
-              <p className="text-sm leading-relaxed" style={{ color: "var(--color-phismail-text-muted)" }}>
-                {m.desc}
-              </p>
+              <div>
+                <p className="text-sm font-medium mb-1" style={{ color: "var(--pm-text)" }}>
+                  {step.title}
+                </p>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--pm-text-secondary)" }}>
+                  {step.desc}
+                </p>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ══ RECENT ANALYSES ═══════════════════════════════════════ */}
+      {/* ── RECENT SCANS ── */}
       <section>
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold" style={{ color: "var(--color-phismail-text)" }}>
-            Recent analyses
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-medium" style={{ color: "var(--pm-text-secondary)" }}>
+            Recent scans
           </h2>
           <Link
             href="/submit"
-            className="text-xs font-mono font-semibold transition-colors"
-            style={{ color: "var(--color-phismail-purple)" }}
+            className="btn-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5"
           >
-            + New analysis
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            New scan
           </Link>
         </div>
 
-        <div className="glass-panel-static overflow-hidden">
-          {loading ? (
-            <div className="p-8 space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-12 loading-shimmer rounded" />
-              ))}
+        {loading ? (
+          <div className="space-y-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-14 loading-shimmer rounded-xl" />
+            ))}
+          </div>
+        ) : analyses.length === 0 ? (
+          <div
+            className="card rounded-xl p-16 text-center"
+            style={{ border: "1px dashed var(--pm-border)" }}
+          >
+            <div
+              className="w-10 h-10 rounded-full mx-auto mb-4 flex items-center justify-center"
+              style={{ background: "var(--pm-accent-muted)", color: "var(--pm-accent)" }}
+            >
+              <SearchIcon />
             </div>
-          ) : analyses.length === 0 ? (
-            <div className="p-12 text-center space-y-3">
-              <p className="text-3xl">🔍</p>
-              <p className="font-semibold" style={{ color: "var(--color-phismail-text)" }}>
-                No analyses yet
-              </p>
-              <p className="text-sm" style={{ color: "var(--color-phismail-text-muted)" }}>
-                Submit your first suspicious email or URL to get started.
-              </p>
-              <Link href="/submit">
-                <span className="btn-primary inline-block mt-2 text-xs px-5 py-2">
-                  Start analyzing
-                </span>
-              </Link>
-            </div>
-          ) : (
-            <table className="soc-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Type</th>
-                  <th>Status</th>
-                  <th>Submitted</th>
-                </tr>
-              </thead>
-              <tbody>
-                {analyses.map((a) => (
-                  <tr key={a.analysis_id}>
-                    <td>
-                      <Link
-                        href={`/analysis/${a.analysis_id}`}
-                        className="font-mono text-xs hover:underline"
-                        style={{ color: "var(--color-phismail-purple)" }}
-                      >
-                        {a.analysis_id.slice(0, 8)}…
-                      </Link>
-                    </td>
-                    <td>
-                      <span className="badge badge-low">{a.artifact_type}</span>
-                    </td>
-                    <td>
-                      <span
-                        className={`badge ${
-                          a.status === "complete"   ? "badge-low"
-                          : a.status === "processing" ? "badge-medium"
-                          : a.status === "failed"     ? "badge-critical"
-                          : "badge-high"
-                        }`}
-                      >
-                        {a.status}
-                      </span>
-                    </td>
-                    <td className="font-mono text-xs" style={{ color: "var(--color-phismail-text-muted)" }}>
-                      {new Date(a.created_at).toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+            <p className="font-medium text-sm mb-1" style={{ color: "var(--pm-text)" }}>
+              No scans yet
+            </p>
+            <p className="text-xs mb-5" style={{ color: "var(--pm-text-secondary)" }}>
+              Submit a suspicious email or URL to get started
+            </p>
+            <Link href="/submit" className="btn-primary text-xs px-5 py-2.5 inline-block">
+              Start first scan
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-1">
+            {analyses.map((a) => {
+              const st = STATUS_MAP[a.status] || STATUS_MAP.pending;
+              return (
+                <Link
+                  key={a.analysis_id}
+                  href={`/analysis/${a.analysis_id}`}
+                  className="flex items-center gap-4 px-4 py-3 rounded-lg transition-colors duration-100"
+                  style={{ background: "transparent" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--pm-surface)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  {/* Type icon */}
+                  <div
+                    className="w-8 h-8 rounded-md flex items-center justify-center shrink-0"
+                    style={{
+                      background: "var(--pm-surface)",
+                      border: "1px solid var(--pm-border)",
+                      color: "var(--pm-text-secondary)",
+                    }}
+                  >
+                    {a.artifact_type === "email" ? <MailIcon /> : <LinkIcon />}
+                  </div>
+
+                  {/* ID + type */}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-mono text-xs font-medium truncate" style={{ color: "var(--pm-text)" }}>
+                      {a.analysis_id.slice(0, 12)}...
+                    </p>
+                    <p className="text-[11px] mt-0.5" style={{ color: "var(--pm-text-muted)" }}>
+                      {a.artifact_type}
+                    </p>
+                  </div>
+
+                  {/* Status */}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{ background: st.color }}
+                    />
+                    <span className="text-xs" style={{ color: "var(--pm-text-secondary)" }}>
+                      {st.label}
+                    </span>
+                  </div>
+
+                  {/* Time */}
+                  <p className="text-xs shrink-0 hidden sm:block" style={{ color: "var(--pm-text-muted)" }}>
+                    {timeAgo(a.created_at)}
+                  </p>
+
+                  {/* Arrow */}
+                  <span style={{ color: "var(--pm-text-muted)" }}>
+                    <ChevronRightIcon />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </section>
     </div>
   );
