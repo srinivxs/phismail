@@ -11,9 +11,10 @@ from unittest.mock import MagicMock, patch
 # Ensure app package is importable
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 
-# Mock settings before any app imports
+# Mock settings before any app imports (including module-level calls in database.py)
 _mock_settings = MagicMock()
 _mock_settings.database_url = "sqlite:///:memory:"
+_mock_settings.database_echo = False
 _mock_settings.redis_url = "redis://localhost:6379/0"
 _mock_settings.celery_broker_url = "redis://localhost:6379/1"
 _mock_settings.celery_result_backend = "redis://localhost:6379/2"
@@ -27,11 +28,20 @@ _mock_settings.cache_ttl_domain_intel = 86400
 _mock_settings.cache_ttl_dns_records = 86400
 _mock_settings.cache_ttl_threat_lookup = 86400
 _mock_settings.ml_model_path = "/tmp/models"
+_mock_settings.jwt_secret_key = "test-jwt-secret-key"
+_mock_settings.jwt_algorithm = "HS256"
+_mock_settings.jwt_access_token_expire_minutes = 15
+_mock_settings.jwt_refresh_token_expire_days = 7
+_mock_settings.google_client_id = ""
+
+# Apply patch at module level so database.py's create_engine() gets SQLite during collection
+_settings_patcher = patch("app.core.config.get_settings", return_value=_mock_settings)
+_settings_patcher.start()
 
 
 @pytest.fixture(autouse=True)
 def mock_settings(monkeypatch):
-    """Mock settings for all tests."""
+    """Mock settings for all tests (re-applied per test for clean state)."""
     with patch("app.core.config.get_settings", return_value=_mock_settings):
         yield _mock_settings
 

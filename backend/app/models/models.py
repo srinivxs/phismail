@@ -414,3 +414,29 @@ class DomainBlacklist(Base):
     last_seen = Column(DateTime, default=datetime.utcnow)
 
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+# =============================================================================
+# User (Authentication)
+# =============================================================================
+
+class AuthProvider(str, enum.Enum):
+    LOCAL = "local"
+    GOOGLE = "google"
+
+
+class User(Base):
+    """Application user for authentication."""
+    __tablename__ = "users"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    email = Column(String(320), unique=True, nullable=False, index=True)
+    display_name = Column(String(100), nullable=True)
+    hashed_password = Column(String(256), nullable=True)  # null for OAuth-only users
+    auth_provider = Column(SQLEnum(AuthProvider), default=AuthProvider.LOCAL, nullable=False)
+    google_sub = Column(String(256), nullable=True, unique=True)  # Google subject ID
+    avatar_url = Column(String(512), nullable=True)
+    is_active = Column(Boolean, default=True, nullable=False)
+
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    last_login_at = Column(DateTime, nullable=True)

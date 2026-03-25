@@ -53,6 +53,13 @@ class Settings(BaseSettings):
     ml_model_path: str = "./ml_models"
     ml_random_seed: int = 42
 
+    # --- Authentication ---
+    jwt_secret_key: str = "change-me-jwt-secret-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_expire_minutes: int = 15
+    jwt_refresh_token_expire_days: int = 7
+    google_client_id: str = ""
+
     @property
     def max_upload_size_bytes(self) -> int:
         return self.max_upload_size_mb * 1024 * 1024

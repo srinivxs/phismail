@@ -9,3 +9,4 @@ export { default as Navbar } from './Navbar';
 export { ThemeProvider, useTheme } from './ThemeProvider';
 export { default as NetworkBackground } from './NetworkBackground';
 export { default as PipelineView } from './PipelineView';
+export { AuthProvider, useAuth } from './AuthProvider';
